@@ -3,3 +3,6 @@ intents:
   HassClimateSetTemperature:
     data:
       - sentences: []
+ - sentences:
+           - "<temperature> хэмээр тохируул"
+           - "<area> <temperature> хэмээр тохируул"

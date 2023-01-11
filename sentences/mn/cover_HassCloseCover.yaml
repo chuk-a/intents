@@ -2,4 +2,17 @@ language: mn
 intents:
   HassCloseCover:
     data:
-      - sentences: []
+      - sentences:
+           - "<name> (хаа | буулга | тат) "
+           - "<area> <name> (хаа | буулга | тат)"
+       - sentences:
+           - "грашийн хаалгыг (хаа | буулга | тат)"
+         slots:
+           device_class: "garage_door"
+       - sentences:
+           - "<area> (хөшиг|жалюз|хаалт)<олон тоо><нэршилийн байдал> (хаа | буулга | тат)"
+         slots:
+           device_class:
+             - "blind"
+             - "curtain"
+             - "shutter"
