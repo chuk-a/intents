@@ -1,20 +1,15 @@
-language: mn
-areas:
-  - name: "гал тогоо"
-    id: kitchen
-  - name: "зочны өрөө"
-    id: living_room
-  - name: "унтлагын өрөө"
-    id: bedroom
-  - name: "гараж"
-    id: garage
+language: "mn"
 entities:
-  - name: "унтлагын өрөөний гэрэл"
-    id: light.bedroom_lamp
-    area: bedroom
-  - name: "гал тогооны унтраалга"
-    id: switch.kitchen
-    area: kitchen
-  - name: "таазны сэнс"
-    id: fan.ceiling
-    area: living_room
+  - name: "London"
+    id: "weather.london"
+    state: "rainy"
+    attributes:
+      temperature: "47"
+      temperature_unit: "°F"
+
+  - name: "Los Angeles"
+    id: "weather.los_angeles"
+    state: "clear"
+    attributes:
+      temperature: "76"
+      temperature_unit: "°F"
