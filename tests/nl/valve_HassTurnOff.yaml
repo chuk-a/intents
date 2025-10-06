@@ -1,0 +1,13 @@
+language: nl
+tests:
+  - sentences:
+      - "sluit de hoofdkraan"
+      - "doe de hoofdkraan dicht"
+      - "wil je de hoofdkraan sluiten"
+      - "kun je de hoofdkraan dicht draaien"
+    intent:
+      name: HassTurnOff
+      slots:
+        domain: "valve"
+        name: "Hoofdkraan"
+    response: "Gesloten"

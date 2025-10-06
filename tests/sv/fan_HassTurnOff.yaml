@@ -1,6 +1,10 @@
 language: sv
 tests:
-- sentences: []
-  intent:
-    name: HassTurnOff
-    slots: {}
+  - sentences:
+      - stäng av alla fläktar i vardagsrummet
+    intent:
+      name: HassTurnOff
+      slots:
+        area: Vardagsrum
+        domain: fan
+        name: all

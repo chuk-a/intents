@@ -2,4 +2,15 @@ language: vi
 intents:
   HassTurnOff:
     data:
-    - sentences: []
+      - sentences:
+          - "tắt [cái] (<area> <name>|<name> [<area>])[đi]"
+          - "[chuyển] (<area> <name>|<name> [trong <area>]) [thành] tắt"
+          - "vô hiệu hóa(<area> <name>|<name> [trong <area>])"
+        excludes_context:
+          domain:
+            - binary_sensor
+            - cover
+            - lock
+            - scene
+            - script
+            - sensor

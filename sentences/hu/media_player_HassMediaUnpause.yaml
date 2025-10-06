@@ -1,0 +1,15 @@
+language: hu
+intents:
+  HassMediaUnpause:
+    data:
+      - sentences:
+          - "(indít[ás|sd[ el]];<name>)"
+        requires_context:
+          domain: media_player
+      - sentences:
+          - "indít([ás|sd[ el]])"
+        requires_context:
+          area:
+            slot: true
+      - sentences:
+          - "(indítsd[ el] a (számot|zenét|filmet|dalt|lejátszót);<area>)"

@@ -1,0 +1,15 @@
+language: de
+tests:
+  - sentences:
+      - "vergiss es"
+      - "egal"
+      - "abbrechen"
+      - "Abbruch"
+      - "nichts"
+      - "nix"
+      - "doch nichts"
+      - "doch nicht"
+      - "doch nix"
+    intent:
+      name: HassNevermind
+    response: ""

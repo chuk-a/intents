@@ -1,0 +1,13 @@
+language: nl
+responses:
+  intents:
+    HassTurnOff:
+      default: "Uitgezet"
+      lights_area: Verlichting uitgezet
+      fans_area: Ventilatoren uitgezet
+      cover: "Gesloten"
+      light_all: "Alle lampen uitgezet"
+      fan_all: "Alle ventilatoren uitgezet"
+      lock: "Ontgrendeld"
+      lock_area: "Sloten ontgrendeld"
+      valve: "Gesloten"

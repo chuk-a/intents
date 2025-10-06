@@ -1,0 +1,6 @@
+language: eu
+responses:
+  intents:
+    HassLightSet:
+      brightness: "Distira ezarrita"
+      color: "Kolorea ezarrita"

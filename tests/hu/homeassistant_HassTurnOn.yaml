@@ -1,10 +1,10 @@
 language: hu
 tests:
   - sentences:
-      - "Éjjeli lámpa be"
-      - "Éjjeli lámpa bekapcsol"
-      - "Éjjeli lámpa bekapcsolás"
+      - "kapcsold be a mennyezeti ventilátort"
+      - "a mennyezeti ventilátort kapcsold be"
     intent:
-      name: "HassTurnOn"
+      name: HassTurnOn
       slots:
-        name: "light.bedroom_lamp"
+        name: mennyezeti ventilátor
+    response: "A mennyezeti ventilátor bekapcsolva"

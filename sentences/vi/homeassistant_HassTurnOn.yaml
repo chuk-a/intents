@@ -2,4 +2,18 @@ language: vi
 intents:
   HassTurnOn:
     data:
-    - sentences: []
+      - sentences:
+          - "<turn> (<area> <name>|<name> [[trong|của|ở|tại] <area>])"
+          - "[<turn>] (<area> <name>|<name> [[trong|của|ở|tại] <area>]) thành bật"
+          - "kích hoạt (<area> <name>|<name> [[trong|của|ở|tại] <area>])"
+          - "[<turn>] <name> [[trong|của|ở|tại] <area>] [thành|sang] bật"
+
+        excludes_context:
+          domain:
+            - binary_sensor
+            - cover
+            - lock
+            - scene
+            - script
+            - sensor
+            - valve

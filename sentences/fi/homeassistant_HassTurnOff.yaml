@@ -1,0 +1,18 @@
+language: "fi"
+intents:
+  HassTurnOff:
+    data:
+      - sentences:
+          - "[<laita>] (<päältä>;{name};[<alue_pääte>])"
+          - "[<laita>] <päältä> {name} <alue_taivutus> {area}"
+          - "[<laita>] (<päältä>;[<alue_taivutus> {area}];{name})"
+          - "<pysäytä> ([<alue_taivutus> {area}];{name})"
+          - "<pysäytä> ({name};[<alue_pääte>])"
+        excludes_context:
+          domain:
+            - binary_sensor
+            - cover
+            - lock
+            - scene
+            - script
+            - sensor

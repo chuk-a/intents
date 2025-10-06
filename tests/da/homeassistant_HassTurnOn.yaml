@@ -2,22 +2,28 @@ language: da
 tests:
   - sentences:
       - "tænd loftsventilator"
-      - "tænd loftsventilatoren"
+      - "tænd for loftsventilatoren"
+      - "start loftsventilatoren"
     intent:
       name: HassTurnOn
       slots:
-        name: "fan.ceiling"
+        name: Loftsventilator
+    response: "Tændte ventilatoren"
+
   - sentences:
       - "tænd for soveværelseslyset"
-      - "tænd soveværelseslyset"
+      - "tænd soveværelseslys"
     intent:
       name: HassTurnOn
       slots:
-        name: "light.bedroom_lamp"
+        name: Soveværelseslys
+    response: "Tændte lyset"
+
   - sentences:
-      - "tænd for køkkenkontakt"
+      - "tænd køkkenkontakt"
       - "tænd for køkkenkontakten"
     intent:
       name: HassTurnOn
       slots:
-        name: "switch.kitchen"
+        name: Køkkenkontakt
+    response: "Tændte kontakten"

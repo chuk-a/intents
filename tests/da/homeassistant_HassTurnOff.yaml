@@ -6,18 +6,23 @@ tests:
     intent:
       name: HassTurnOff
       slots:
-        name: "fan.ceiling"
+        name: Loftsventilator
+    response: "Slukkede ventilatoren"
+
   - sentences:
       - "sluk for soveværelseslyset"
       - "sluk soveværelseslyset"
     intent:
       name: HassTurnOff
       slots:
-        name: "light.bedroom_lamp"
+        name: Soveværelseslys
+    response: "Slukkede lyset"
+
   - sentences:
       - "sluk for køkkenkontakt"
       - "sluk for køkkenkontakten"
     intent:
       name: HassTurnOff
       slots:
-        name: "switch.kitchen"
+        name: Køkkenkontakt
+    response: "Slukkede kontakten"

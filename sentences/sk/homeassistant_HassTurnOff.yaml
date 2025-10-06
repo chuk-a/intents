@@ -1,6 +1,15 @@
-language: "sk"
+language: sk
 intents:
   HassTurnOff:
     data:
       - sentences:
-          - "<turn_off> <name>"
+          - <turn_off> <name>[ <area>]
+        excludes_context:
+          domain:
+            - binary_sensor
+            - cover
+            - lock
+            - scene
+            - script
+            - sensor
+            - valve

@@ -1,0 +1,5 @@
+language: "it"
+responses:
+  intents:
+    HassClimateSetTemperature:
+      default: "Temperatura impostata a {{ slots.temperature }} {{ 'grado' if (slots.temperature | float) == 1 else 'gradi' }}"

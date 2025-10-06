@@ -4,3 +4,12 @@ intents:
     data:
       - sentences:
           - "<turn_on> <name>"
+      - sentences:
+          - "<turn_on> <name>"
+        requires_context:
+          domain: "light"
+        response: "light"
+      - sentences:
+          - "<open> <name>  <area>"
+          - "<open> <area> <name>"
+        response: "cover_area"

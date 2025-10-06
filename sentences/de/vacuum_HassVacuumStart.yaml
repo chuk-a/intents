@@ -1,0 +1,12 @@
+language: de
+intents:
+  HassVacuumStart:
+    data:
+      - sentences:
+          - (<schalten>|<machen>) <name> <an>
+          - (<ausfuehren>|<aktivieren>) <name>
+          - schick[e] <name>[ los]
+          - <name> (<ausfuehren>|<aktivieren>|[los]schicken)
+          - <name> <an>[schalten|machen]
+        requires_context:
+          domain: vacuum

@@ -1,6 +1,12 @@
 language: is
 tests:
-  - sentences: []
+  - sentences:
+      - "stilltu hitann á 19 gráður"
+      - "settu hitann á 19 gráður"
+      - "settu 19 gráður á ofninn"
+      - "stilltu ofninn á 19 gráður"
     intent:
       name: HassClimateSetTemperature
-      slots: {}
+      slots:
+        temperature: 19
+    response: "Hitastig stillt"

@@ -3,6 +3,16 @@ intents:
   HassTurnOff:
     data:
       - sentences:
-          - "(desliga | desligue | apaga | apague) [(todas | todos)] [(o | os | a | as)] (luz | luzes | candeeiro | candeeiros) <na_zona>"
+          - "<desligar> [tod(as|os)] [(o[s]|a[s])] <luz> <na_zona>"
         slots:
           domain: "light"
+
+      # Desligar luzes na mesma divisão que um dispositivo de voz
+      - sentences:
+          - "<desligar> [(o[s]|a[s])] <luz>"
+          - "<desligar> [tod(as|os)] [(o[s]|a[s])] <luz> aqui"
+        slots:
+          domain: "light"
+        requires_context:
+          area:
+            slot: true

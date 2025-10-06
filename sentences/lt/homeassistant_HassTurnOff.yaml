@@ -5,3 +5,6 @@ intents:
       - sentences:
           - "<turn_off> <name>"
           - "<turn_off> <area> <name>"
+          - "<turn_off> <name> <area>"
+        excludes_context:
+          domain: cover

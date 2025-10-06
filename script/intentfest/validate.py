@@ -1,24 +1,48 @@
 """Validate all intent files."""
+
 from __future__ import annotations
 
 import argparse
+import itertools
+from collections import Counter, defaultdict
+from collections.abc import Callable, Collection
+from datetime import datetime
 from pathlib import Path
 from typing import Any
+from unittest.mock import MagicMock
 
+import jinja2
+import regex
 import voluptuous as vol
 import yaml
+from hassil import (
+    Alternative,
+    Expression,
+    Group,
+    ListReference,
+    RuleReference,
+    parse_sentence,
+)
 from voluptuous.humanize import validate_with_humanized_errors
+
+from shared import get_jinja2_environment
 
 from .const import (
     INTENTS_FILE,
     LANGUAGES,
     LANGUAGES_FILE,
+    LIST_DIR,
     RESPONSE_DIR,
     ROOT,
+    RULE_DIR,
     SENTENCE_DIR,
     TESTS_DIR,
 )
 from .util import get_base_arg_parser
+
+HA_LIST_NAMES = {"name", "area", "floor"}
+SLOT_COMBO_VALIDATION_LANGUAGES = {"en"}
+IMPORTANCE_LEVELS = {"required", "usable", "complete", "optional"}
 
 
 def match_anything(value):
@@ -29,14 +53,26 @@ def match_anything(value):
 def match_anything_but_dict(value):
     """Validator that matches everything but a dict"""
     if isinstance(value, dict):
-        raise vol.Invalid("Expected anythung but a dictionary")
+        raise vol.Invalid("Expected anything but a dictionary")
     return value
 
 
-def single_key_dict_validator(schemas: dict[str, Any]) -> vol.Schema:
+def match_unicode_regex(pattern: str):
+    """Validator that matches a regex with support for Unicode properties."""
+
+    def inner_match(value):
+        if regex.match(pattern, value) is None:
+            raise vol.Invalid(f"{value} did not match pattern {pattern}")
+
+        return value
+
+    return inner_match
+
+
+def single_key_dict_validator(schemas: dict[str, Any]) -> Callable[[Any], vol.Schema]:
     """Create a validator for a single key dict."""
 
-    def validate(value):
+    def validate(value) -> vol.Schema:
         if not isinstance(value, dict):
             raise vol.Invalid("Expected a dict")
 
@@ -62,6 +98,19 @@ LANGUAGES_SCHEMA = vol.Schema(
             vol.Required("nativeName"): str,
             vol.Optional("isRTL"): bool,
             vol.Optional("leaders"): [str],
+            vol.Optional("support"): {
+                str: {
+                    vol.Optional("speech-to-text"): {
+                        vol.Optional("speech-to-phrase"): bool,
+                        vol.Optional("whisper"): bool,
+                        vol.Optional("cloud"): bool,
+                    },
+                    vol.Optional("text-to-speech"): {
+                        vol.Optional("piper"): bool,
+                        vol.Optional("cloud"): bool,
+                    },
+                }
+            },
         }
     }
 )
@@ -69,18 +118,33 @@ LANGUAGES_SCHEMA = vol.Schema(
 INTENTS_SCHEMA = vol.Schema(
     {
         str: {
+            vol.Optional("supported"): bool,
             vol.Required("domain"): str,
             vol.Required("description"): str,
             vol.Optional("slots"): {
+                # slot name
                 str: {
                     vol.Required("description"): str,
                     vol.Optional("required"): bool,
                 }
             },
-            vol.Optional("slot_combinations"): {
-                str: [str],
+            vol.Required("slot_combinations"): {
+                # slot name
+                str: {
+                    vol.Required("description"): str,
+                    vol.Optional("importance"): vol.In(IMPORTANCE_LEVELS),
+                    vol.Required("slots"): [str],
+                    vol.Optional("inferred_domains"): {
+                        vol.In(IMPORTANCE_LEVELS): [str]
+                    },
+                    vol.Optional("name_domains"): {vol.In(IMPORTANCE_LEVELS): [str]},
+                    vol.Optional("context_area"): bool,
+                    vol.Required("example"): vol.Any(str, [str]),
+                    vol.Optional("wildcard_slots"): [str],
+                }
             },
             vol.Optional("response_variables"): {
+                # variable name
                 str: {
                     vol.Required("description"): str,
                 }
@@ -91,15 +155,39 @@ INTENTS_SCHEMA = vol.Schema(
 
 INTENT_ERRORS = {
     "no_intent",
-    "no_area",
-    "no_domain",
-    "no_device_class",
-    "no_entity",
     "handle_error",
+    "no_area",
+    "no_floor",
+    "no_domain",
+    "no_domain_in_area",
+    "no_domain_in_floor",
+    "no_device_class",
+    "no_device_class_in_area",
+    "no_device_class_in_floor",
+    "no_entity",
+    "no_entity_in_area",
+    "no_entity_in_floor",
+    "no_entity_exposed",
+    "no_entity_in_area_exposed",
+    "no_entity_in_floor_exposed",
+    "no_domain_exposed",
+    "no_domain_in_area_exposed",
+    "no_domain_in_floor_exposed",
+    "no_device_class_exposed",
+    "no_device_class_in_area_exposed",
+    "no_device_class_in_floor_exposed",
+    "duplicate_entities",
+    "duplicate_entities_in_area",
+    "duplicate_entities_in_floor",
+    "entity_wrong_state",
+    "feature_not_supported",
+    "timer_not_found",
+    "multiple_timers_matched",
+    "no_timer_support",
 }
 
-SENTENCE_MATCHER = vol.Match(
-    r"^[\w '\|\(\)\[\]\{\}\<\>]+$",
+SENTENCE_MATCHER = vol.All(
+    match_unicode_regex(r"^[\w\p{M} :\-'\|\(\)\[\]\{\}\<\>;]+$"),
     msg="Sentences should only contain words and matching syntax. They should not contain punctuation.",
 )
 
@@ -110,10 +198,16 @@ SENTENCE_SCHEMA = vol.Schema(
             str: {
                 vol.Required("data"): [
                     {
+                        vol.Optional("expansion_rules"): {str: str},
                         vol.Required("sentences"): [SENTENCE_MATCHER],
                         vol.Optional("slots"): {
                             str: match_anything,
                         },
+                        vol.Optional("requires_context"): {str: match_anything},
+                        vol.Optional("excludes_context"): {str: match_anything},
+                        vol.Optional("response"): str,
+                        vol.Optional("metadata"): {str: match_anything},
+                        vol.Optional("required_keywords"): [str],
                     }
                 ]
             }
@@ -123,9 +217,55 @@ SENTENCE_SCHEMA = vol.Schema(
     # but we do not accept that in our repository.
 )
 
+
+# pylint: disable=too-many-positional-arguments
+def SLOT_COMBO_SENTENCE_SCHEMA(
+    language: str,
+    combo_name: str,
+    name_domains: set[str],
+    inferred_domains: set[str],
+    list_names: set[str],
+    slot_names: set[str],
+    rule_names: set[str],
+    response_names: set[str],
+) -> vol.Schema:
+    schema_sentences_dict = {
+        vol.Required("sentences"): [
+            vol.All(
+                non_empty_string,
+                not_optional,
+                no_alternative_list_references,
+                allowed_list_names(list_names),
+                required_slots_names(slot_names),
+                allowed_rule_names(rule_names),
+            )
+        ],
+        vol.Required("response"): vol.In(response_names),
+    }
+
+    if name_domains:
+        schema_sentences_dict[vol.Required("name_domains")] = [vol.In(name_domains)]
+
+    if inferred_domains:
+        schema_sentences_dict[vol.Required("inferred_domain")] = vol.In(
+            inferred_domains
+        )
+
+    return vol.Schema(
+        {
+            vol.Required("language"): language,
+            vol.Required("data"): [schema_sentences_dict],
+        }
+    )
+
+
 SENTENCE_COMMON_SCHEMA = vol.Schema(
     {
         vol.Required("language"): str,
+        vol.Optional("settings"): {
+            vol.Optional("ignore_whitespace"): bool,
+            vol.Optional("filter_with_regex"): bool,
+        },
         vol.Optional("responses"): {
             vol.Optional("errors"): {
                 vol.In(INTENT_ERRORS): str,
@@ -148,7 +288,10 @@ SENTENCE_COMMON_SCHEMA = vol.Schema(
                         vol.Required("from"): int,
                         vol.Required("to"): int,
                         vol.Optional("step", default=1): int,
+                        vol.Optional("fractions"): vol.Any("halves", "tenths"),
+                        vol.Optional("multiplier"): vol.Coerce(float),
                     },
+                    "wildcard": bool,
                 }
             )
         },
@@ -171,7 +314,11 @@ TESTS_SCHEMA = vol.Schema(
                         # this will allow us to add more keys in the future.
                         str: match_anything_but_dict,
                     },
+                    vol.Optional("context"): {
+                        str: match_anything_but_dict,
+                    },
                 },
+                vol.Optional("response"): vol.Any(str, [str]),
             }
         ],
     }
@@ -180,33 +327,198 @@ TESTS_SCHEMA = vol.Schema(
 TESTS_FIXTURES = vol.Schema(
     {
         vol.Required("language"): str,
+        vol.Optional("floors"): [
+            {
+                vol.Required("name"): str,
+                vol.Required("id"): str,
+            }
+        ],
         vol.Optional("areas"): [
             {
                 vol.Required("name"): str,
                 vol.Required("id"): str,
+                vol.Optional("floor"): str,
             }
         ],
         vol.Optional("entities"): [
             {
                 vol.Required("name"): str,
                 vol.Required("id"): str,
-                vol.Required("area"): str,
+                vol.Optional("area"): str,
                 vol.Optional("device_class"): str,
+                vol.Optional("state"): vol.Any(
+                    str, {vol.Required("in"): str, vol.Required("out"): str}
+                ),
+                vol.Optional("attributes"): {str: match_anything},
+                vol.Optional("is_exposed"): bool,
             }
         ],
+        vol.Optional("timers"): [
+            {
+                vol.Required(
+                    vol.Any("start_hours", "start_minutes", "start_seconds")
+                ): int,
+                vol.Required("total_seconds_left"): int,
+                vol.Required("rounded_hours_left"): int,
+                vol.Required("rounded_minutes_left"): int,
+                vol.Required("rounded_seconds_left"): int,
+                vol.Optional("name"): str,
+                vol.Optional("area"): str,
+                vol.Optional("is_active"): bool,
+            }
+        ],
+        vol.Optional("media"): [{vol.Required("title"): str}],
     }
 )
+
+TESTS_FAILURES = vol.Schema(
+    {vol.Required("language"): str, vol.Required("sentences"): [str]}
+)
+
 
 RESPONSE_SCHEMA = vol.Schema(
     {
         vol.Required("language"): str,
         vol.Optional("responses"): {
             vol.Optional("intents"): {
-                str: {vol.Required("success"): [str]},
+                # intent -> response key -> Jinja2 template
+                str: {str: str},
             }
         },
     }
 )
+
+
+def EXPANSION_RULES_SCHEMA(language: str) -> vol.Schema:
+    return vol.Schema(
+        {
+            vol.Required("language"): language,
+            vol.Required("expansion_rules"): {
+                # Rule name
+                str: vol.All(non_empty_string, not_optional),
+            },
+        }
+    )
+
+
+SHARED_LISTS_SCHEMA = vol.Schema(
+    {
+        vol.Required("lists"): {
+            # list name
+            str: vol.Any(
+                {
+                    # Range of numbers
+                    vol.Required("range"): {
+                        vol.Required("from"): int,
+                        vol.Required("to"): int,
+                        vol.Optional("step"): int,
+                        vol.Optional("type"): "percentage",
+                        vol.Optional("fractions"): "halves",
+                        vol.Optional("multiplier"): vol.Coerce(float),
+                    }
+                },
+                {vol.Required("wildcard"): bool},
+            )
+        }
+    }
+)
+
+
+def LANGUAGE_LISTS_SCHEMA(language: str) -> vol.Schema:
+    return vol.Schema(
+        {
+            vol.Required("language"): language,
+            vol.Required("lists"): {
+                # List name
+                str: vol.Any(
+                    {
+                        # Fixed values
+                        vol.Required("values"): [
+                            vol.Any(
+                                vol.All(
+                                    non_empty_string,
+                                    not_optional,
+                                    no_list_or_rule_references,
+                                ),
+                                {
+                                    vol.Required("in"): vol.All(
+                                        non_empty_string,
+                                        not_optional,
+                                        no_list_or_rule_references,
+                                    ),
+                                    vol.Required("out"): vol.Any(str, int),
+                                },
+                            )
+                        ]
+                    },
+                    {
+                        # Range of numbers
+                        vol.Required("range"): {
+                            vol.Required("from"): int,
+                            vol.Required("to"): int,
+                            vol.Optional("step"): int,
+                            vol.Optional("type"): "percentage",
+                            vol.Optional("fractions"): "halves",
+                            vol.Optional("multiplier"): vol.Coerce(float),
+                        }
+                    },
+                    {vol.Required("wildcard"): bool},
+                ),
+            },
+        }
+    )
+
+
+TIMER_SCHEMA_DICT = {
+    vol.Optional("start_hours"): int,
+    vol.Optional("start_minutes"): int,
+    vol.Optional("start_seconds"): int,
+    vol.Optional("total_seconds_left"): int,
+    vol.Optional("rounded_hours_left"): int,
+    vol.Optional("rounded_minutes_left"): int,
+    vol.Optional("rounded_seconds_left"): int,
+    vol.Optional("name"): str,
+    vol.Optional("area"): str,
+    vol.Optional("is_active"): bool,
+}
+
+MEDIA_SCHEMA_DICT = {vol.Required("title"): str}
+
+
+def SLOT_COMBO_TEST_SCHEMA(
+    language: str,
+    available_slot_names: set[str],
+) -> vol.Schema:
+
+    return vol.Schema(
+        {
+            vol.Required("language"): language,
+            vol.Optional("entities"): [
+                {
+                    vol.Required("name"): str,
+                    vol.Required("domain"): str,
+                    vol.Optional("state"): str,
+                    vol.Optional("state_with_unit"): str,
+                }
+            ],
+            vol.Optional("areas"): [{vol.Required("name"): str}],
+            vol.Optional("floors"): [{vol.Required("name"): str}],
+            vol.Optional("timers"): [TIMER_SCHEMA_DICT],
+            vol.Optional("media"): [MEDIA_SCHEMA_DICT],
+            vol.Required("tests"): [
+                {
+                    vol.Required("sentences"): [str],
+                    vol.Required("response"): str,
+                    vol.Optional("slots"): {
+                        # slot name
+                        vol.In(available_slot_names): vol.Any(str, int, [str])
+                    },
+                    vol.Optional("timers"): [TIMER_SCHEMA_DICT],
+                    vol.Optional("media"): [MEDIA_SCHEMA_DICT],
+                }
+            ],
+        }
+    )
 
 
 def get_arguments() -> argparse.Namespace:
@@ -227,13 +539,71 @@ def run() -> int:
         languages = [args.language]
 
     load_errors: list[str] = []
+
+    # intents.yaml
     intent_schemas = _load_yaml_file(load_errors, None, INTENTS_FILE, INTENTS_SCHEMA)
-    if intent_schemas is None:
+    if intent_schemas:
+        # Verify that slot combinations refer only to slots that the intent supports
+        for intent_name, intent_info in intent_schemas.items():
+            valid_slot_names = set(intent_info.get("slots", []))
+
+            for combo_name, combo_info in intent_schemas[intent_name][
+                "slot_combinations"
+            ].items():
+                error_info = f"intent_name={intent_name}, combo_name={combo_name}"
+                combo_slot_names = set(combo_info["slots"])
+                wildcard_slot_names = set(combo_info.get("wildcard_slots", []))
+                if not combo_slot_names.issubset(valid_slot_names):
+                    load_errors.append(
+                        f"Intent does not support slot(s) used in slot combination: {error_info}, "
+                        f"slots={combo_slot_names - valid_slot_names}"
+                    )
+
+                if not wildcard_slot_names.issubset(valid_slot_names):
+                    load_errors.append(
+                        f"Intent does not support wildcard slot(s) used in slot combination: {error_info}, "
+                        f"slots={wildcard_slot_names - valid_slot_names}"
+                    )
+
+                if (
+                    ("name" in combo_slot_names)
+                    and ("name_domains" not in combo_info)
+                    and ("name" not in wildcard_slot_names)
+                ):
+                    load_errors.append(
+                        f"name_domains must be provided when name slot is used: {error_info}"
+                    )
+
+                if ("domain" in combo_slot_names) and (
+                    "inferred_domains" not in combo_info
+                ):
+                    load_errors.append(
+                        f"inferred_domains must be provided when domain slot is used: {error_info}"
+                    )
+
+                # name_domains restricts "name" slot
+                # inferred_domains are inferred by words used in the sentence
+                if ("name_domains" in combo_info) and (
+                    "inferred_domains" in combo_info
+                ):
+                    load_errors.append(
+                        f"Cannot have both name_domains and inferred_domains: {error_info}"
+                    )
+
+                if ("importance" in combo_info) and (
+                    ("name_domains" in combo_info) or ("inferred_domains" in combo_info)
+                ):
+                    load_errors.append(
+                        f"Importance level should come from name_domains or inferred_domains: {error_info}"
+                    )
+
+    if (intent_schemas is None) or load_errors:
         print("File intents.yaml has invalid format:")
         for error in load_errors:
             print(f" - {error}")
         return 1
 
+    # languages.yaml
     language_infos = _load_yaml_file(
         load_errors, None, LANGUAGES_FILE, LANGUAGES_SCHEMA
     )
@@ -247,25 +617,59 @@ def run() -> int:
         if sorted(language_infos) != list(language_infos):
             load_errors.append("Languages should be sorted alphabetically")
 
-    if language_infos is None or load_errors:
+    if (language_infos is None) or load_errors:
         print("File languages.yaml has invalid format:")
         for error in load_errors:
             print(f" - {error}")
         return 1
 
+    # shared lists
+    shared_list_names: set[str] = set()
+    for list_path in LIST_DIR.glob("*.yaml"):
+        list_info = _load_yaml_file(load_errors, None, list_path, SHARED_LISTS_SCHEMA)
+
+        if (list_info is None) or load_errors:
+            print(f"File {list_path} has invalid format:")
+            for error in load_errors:
+                print(f" - {error}")
+            return 1
+
+        shared_list_names.update(list_info["lists"].keys())
+
     errors: dict[str, list[str]] = {}
+    warnings: dict[str, list[str]] = {}
 
     for language in languages:
         errors[language] = []
+        warnings[language] = []
         validate_language(
             language_infos.get(language),
             intent_schemas,
             language,
             errors[language],
+            warnings[language],
+        )
+
+        lang_list_names = validate_lists(language, errors[language])
+        available_list_names = set.union(
+            HA_LIST_NAMES, shared_list_names, lang_list_names
+        )
+        available_rule_names = validate_expansion_rules(language, errors[language])
+
+        validate_slot_combinations(
+            intent_schemas,
+            language,
+            available_list_names,
+            available_rule_names,
+            errors[language],
+            warnings[language],
         )
         # Remove language if no errors
         if not errors[language]:
             errors.pop(language)
+
+        if not warnings[language]:
+            warnings.pop(language)
 
     if errors:
         print("Validation failed")
@@ -274,21 +678,28 @@ def run() -> int:
         for language, language_errors in errors.items():
             print(f"Language: {language}")
             for error in language_errors:
-                print(f" - {error}")
+                print(f"[ERROR] {error}")
             print()
         return 1
+
+    if warnings:
+        for language, language_warnings in warnings.items():
+            print(f"Language: {language}")
+            for warning in language_warnings:
+                print(f"[WARN] {warning}")
+            print()
 
     print("All good!")
     return 0
 
 
 def _load_yaml_file(
-    errors: list, language: str | None, file_path: Path, schema: vol.Schemna
+    errors: list, language: str | None, file_path: Path, schema: vol.Schema
 ) -> dict | None:
     """Load a YAML file."""
     path = str(file_path.relative_to(ROOT))
     try:
-        content = yaml.safe_load(file_path.read_text())
+        content = yaml.safe_load(file_path.read_text(encoding="utf8"))
     except yaml.YAMLError as err:
         errors.append(f"{path}: invalid YAML: {err}")
         return None
@@ -311,6 +722,7 @@ def validate_language(
     intent_schemas: dict,
     language: str,
     errors: list[str],
+    warnings: list[str],
 ):
     sentence_dir: Path = SENTENCE_DIR / language
     test_dir: Path = TESTS_DIR / language
@@ -321,7 +733,13 @@ def validate_language(
 
     sentence_files = {}
 
-    for sentence_file in sentence_dir.iterdir():
+    # intent -> {response}
+    used_response_keys: dict[str, set[str]] = defaultdict(set)
+
+    # intent -> sentence count
+    num_intent_sentences: Counter[str] = Counter()
+
+    for sentence_file in sentence_dir.glob("*.yaml"):
         path = str(sentence_file.relative_to(ROOT))
 
         if sentence_file.name == "_common.yaml":
@@ -339,21 +757,33 @@ def validate_language(
         if content is None:
             continue
 
-        _domain, intent = sentence_file.stem.split("_")
+        _domain, intent = sentence_file.stem.rsplit("_", maxsplit=1)
 
         if intent not in intent_schemas:
             errors.append(f"{path}: Filename references unknown intent {intent}.yaml")
             continue
 
+        # Gather response keys used in intents.
+        # They will be validated against the response files below.
+        for intent in content["intents"]:
+            for intent_data in content["intents"][intent]["data"]:
+                response_key = intent_data.get("response", "default")
+                used_response_keys[intent].add(response_key)
+
+                # Track count of sentences for this intent
+                num_intent_sentences[intent] += len(intent_data["sentences"])
+
     if not test_dir.exists():
         errors.append(f"{test_dir.relative_to(ROOT)}: Missing tests directory")
         return
 
-    for test_file in test_dir.iterdir():
+    for test_file in test_dir.glob("*.yaml"):
         path = str(test_file.relative_to(ROOT))
 
         if test_file.name == "_fixtures.yaml":
             schema = TESTS_FIXTURES
+        elif test_file.name == "_test_failures.yaml":
+            schema = TESTS_FAILURES
         else:
             schema = TESTS_SCHEMA
 
@@ -365,10 +795,14 @@ def validate_language(
         if test_file.name == "_fixtures.yaml":
             area_ids = set(area["id"] for area in content.get("areas", []))
             for entity in content.get("entities", []):
-                if entity["area"] not in area_ids:
+                area = entity.get("area")
+                if (area is not None) and (area not in area_ids):
                     errors.append(
-                        f"{path}: Entity {entity['name']} references unknown area {entity['id']}"
+                        f"{path}: Entity {entity['name']} references unknown area {entity['area']}"
                     )
+            continue
+
+        if test_file.name == "_test_failures.yaml":
             continue
 
         if test_file.name not in sentence_files:
@@ -376,7 +810,21 @@ def validate_language(
             continue
 
         sentence_content = sentence_files.pop(test_file.name)
-        _domain, intent = test_file.stem.split("_")
+        _domain, intent = test_file.stem.rsplit("_", maxsplit=1)
+
+        # Ensure test file has the correct intent
+        has_correct_intent = True
+        for test in content["tests"]:
+            test_intent = test["intent"]["name"]
+            if test_intent != intent:
+                errors.append(
+                    f"{path}: expected intent {intent} but found {test_intent}"
+                )
+                has_correct_intent = False
+                break
+
+        if not has_correct_intent:
+            continue
 
         test_count = sum(len(test["sentences"]) for test in content["tests"])
 
@@ -391,13 +839,28 @@ def validate_language(
             )
 
             if sentence_count > test_count:
-                errors.append(f"{path}: not all sentences have tests")
+                errors.append(
+                    f"{path}: not all sentences have tests ({test_count}/{sentence_count})"
+                )
+
+        missing_response_checks = 0
+        for test_data in content["tests"]:
+            if "response" not in test_data:
+                missing_response_checks += 1
+
+        if missing_response_checks > 0:
+            warnings.append(
+                f"{path}: {missing_response_checks} test(s) missing response check"
+            )
 
     if sentence_files:
         for sentence_file_without_tests in sentence_files:
             errors.append(f"{sentence_file_without_tests} has no tests")
 
-    for response_file in response_dir.iterdir():
+    # Environment used to render response templates
+    jinja2_env = get_jinja2_environment()
+
+    for response_file in response_dir.glob("*.yaml"):
         path = str(response_file.relative_to(ROOT))
         intent = response_file.stem
 
@@ -412,8 +875,399 @@ def validate_language(
         if content is None:
             continue
 
-        for intent_name in content["responses"]["intents"]:
+        if num_intent_sentences[intent] < 1:
+            # Skip response key validation if there are no sentences defined for the intent.
+            # This avoids CI validate problems with adding the test language.
+            continue
+
+        used_intent_response_keys: set[str] = used_response_keys.get(intent, set())
+        for intent_name, intent_responses in content["responses"]["intents"].items():
             if intent != intent_name:
                 errors.append(
                     f"{path}: references incorrect intent {intent_name}. Only {intent} allowed"
                 )
+                continue
+
+            possible_response_keys: set[str] = set()
+            slots: dict[str, Any] = {
+                slot_name: f"<{slot_name}>"
+                for slot_name in intent_schemas[intent_name].get("slots", {})
+            }
+
+            # For timer intents
+            slots["timers"] = []
+            slots["canceled"] = 0
+
+            # For date/time intents
+            slots["date"] = datetime.now().date()
+            slots["time"] = datetime.now().time()
+
+            # Media search/play
+            slots["media"] = {"title": ""}
+
+            for response_key, response_template in intent_responses.items():
+                possible_response_keys.add(response_key)
+                if response_key not in used_intent_response_keys:
+                    warnings.append(f"{path}: unused response {response_key}")
+
+                if response_template:
+                    try:
+                        jinja2_env.from_string(response_template).render(
+                            {
+                                "state": {
+                                    "name": "<name>",
+                                    "state": 0,
+                                    "domain": "<domain>",
+                                    "state_with_unit": "",
+                                    "attributes": {},
+                                },
+                                "slots": slots,
+                                "query": {"matched": [], "unmatched": []},
+                                "state_attr": lambda *args: None,
+                                "metadata": MagicMock(),
+                            }
+                        )
+                    except jinja2.exceptions.TemplateError as err:
+                        errors.append(
+                            f"{path}: {err.args[0]} in response '{response_key}' (template='{response_template}')"
+                        )
+
+            missing_response_keys = used_intent_response_keys - possible_response_keys
+            for response_key in missing_response_keys:
+                errors.append(f"{path}: response not defined {response_key}")
+
+
+def validate_slot_combinations(
+    intent_schemas: dict,
+    language: str,
+    available_list_names: set[str],
+    available_rule_names: set[str],
+    errors: list[str],
+    warnings: list[str],
+) -> None:
+    """Validate the sentence and test YAML files for each slot combination."""
+    if language not in SLOT_COMBO_VALIDATION_LANGUAGES:
+        return
+
+    sentence_dir = SENTENCE_DIR / language
+    test_dir = TESTS_DIR / language
+
+    for intent_name in intent_schemas:
+        intent_dir = sentence_dir / intent_name
+        test_intent_dir = test_dir / intent_name
+
+        available_response_names: set[str] = set()
+        responses_path = RESPONSE_DIR / language / f"{intent_name}.yaml"
+        if responses_path.exists():
+            with open(responses_path, "r", encoding="utf-8") as responses_file:
+                responses_dict = yaml.safe_load(responses_file)
+                available_response_names.update(
+                    responses_dict["responses"]["intents"][intent_name]
+                )
+
+        for combo_name, combo_info in intent_schemas[intent_name][
+            "slot_combinations"
+        ].items():
+            combo_sentence_path = intent_dir / f"{combo_name}.yaml"
+            error_info = f"intent_name={intent_name}, combo_name={combo_name}, file={combo_sentence_path}"
+
+            name_domains: dict[str, list[str]] = combo_info.get("name_domains", {})
+            inferred_domains: dict[str, list[str]] = combo_info.get(
+                "inferred_domains", {}
+            )
+
+            combo_importances: Collection[str]
+            if name_domains:
+                combo_importances = name_domains.keys()
+            elif inferred_domains:
+                combo_importances = inferred_domains.keys()
+            else:
+                combo_importances = [combo_info["importance"]]
+
+            if not combo_sentence_path.exists():
+                if "required" in combo_importances:
+                    errors.append(
+                        f"Missing sentences for required slot combination: {error_info}"
+                    )
+                elif "usable" in combo_importances:
+                    warnings.append(
+                        f"Missing sentences for usable slot combination: {error_info}"
+                    )
+
+                continue
+
+            available_slot_names = set(combo_info.get("slots", []))
+            available_sentence_slot_names = set(available_slot_names)
+            if inferred_domains:
+                available_sentence_slot_names.discard("domain")
+
+            all_name_domains = set(itertools.chain.from_iterable(name_domains.values()))
+            all_inferred_domains = set(
+                itertools.chain.from_iterable(inferred_domains.values())
+            )
+
+            # validate sentences
+            sentences_info = _load_yaml_file(
+                errors,
+                language,
+                combo_sentence_path,
+                SLOT_COMBO_SENTENCE_SCHEMA(
+                    language,
+                    combo_name,
+                    name_domains=all_name_domains,
+                    inferred_domains=all_inferred_domains,
+                    list_names=available_list_names,
+                    slot_names=available_sentence_slot_names,
+                    rule_names=available_rule_names,
+                    response_names=available_response_names,
+                ),
+            )
+            if not sentences_info:
+                continue
+
+            required_name_domains = set(name_domains.get("required", []))
+            required_inferred_domains = set(inferred_domains.get("required", []))
+
+            for sentences_dict in sentences_info["data"]:
+                sentence_error_info = f"{error_info}, sentences={sentences_dict}"
+                sentence_name_domains = set(sentences_dict.get("name_domains", []))
+                sentence_inferred_domain = sentences_dict.get("inferred_domain")
+
+                if name_domains:
+                    assert (
+                        sentence_name_domains
+                    ), f"name_domains must be provided: {sentence_error_info}"
+
+                    assert sentence_name_domains.issubset(all_name_domains), (
+                        "Name domains must match slot combination definition: "
+                        f"actual={sentence_name_domains}, "
+                        f"expected={all_name_domains}, "
+                        f"{sentence_error_info}"
+                    )
+
+                    # Track if we've covered all required domains
+                    required_name_domains.difference_update(sentence_name_domains)
+                else:
+                    assert (
+                        not sentence_name_domains
+                    ), f"Slot combination definition does not specify name_domains: {sentence_error_info}"
+
+                if inferred_domains:
+                    assert (
+                        sentence_inferred_domain
+                    ), f"inferred_domain must be provided: {sentence_error_info}"
+
+                    assert sentence_inferred_domain in all_inferred_domains, (
+                        "Inferred domain must match slot combination definiiton: "
+                        f"actual={sentence_inferred_domain}, "
+                        f"expected={all_inferred_domains}, "
+                        f"{sentence_error_info}"
+                    )
+
+                    # Track if we've covered all required domains
+                    required_inferred_domains.remove(sentence_inferred_domain)
+                else:
+                    assert (
+                        not sentence_inferred_domain
+                    ), f"Slot combination definition does not specify inferred_domains: {sentence_error_info}"
+
+            if name_domains:
+                assert not required_name_domains, (
+                    "Required name domain(s) are not covered: "
+                    f"domains={required_name_domains}, {error_info}"
+                )
+
+            if inferred_domains:
+                assert not required_inferred_domains, (
+                    "Required inferred domain(s) are not covered: "
+                    f"domains={required_inferred_domains}, {error_info}"
+                )
+
+            # validate tests
+            combo_test_path = test_intent_dir / f"{combo_name}.yaml"
+            if not combo_test_path.exists():
+                errors.append(
+                    f"Missing test file for slot combination: {error_info}, "
+                    f"file={combo_test_path}"
+                )
+                continue
+
+            _load_yaml_file(
+                errors,
+                language,
+                combo_test_path,
+                SLOT_COMBO_TEST_SCHEMA(language, available_slot_names),
+            )
+
+
+def validate_lists(language: str, errors: list[str]) -> set[str]:
+    lang_list_names: set[str] = set()
+
+    lists_dir: Path = LIST_DIR / language
+    for list_path in lists_dir.glob("*.yaml"):
+        list_info = _load_yaml_file(
+            errors, language, list_path, LANGUAGE_LISTS_SCHEMA(language)
+        )
+        if list_info:
+            lang_list_names.update(list_info["lists"].keys())
+
+    return lang_list_names
+
+
+def validate_expansion_rules(language: str, errors: list[str]) -> set[str]:
+    lang_rule_names: set[str] = set()
+
+    rules_dir: Path = RULE_DIR / language
+    for rule_path in rules_dir.glob("*.yaml"):
+        rule_info = _load_yaml_file(
+            errors, language, rule_path, EXPANSION_RULES_SCHEMA(language)
+        )
+        if rule_info:
+            lang_rule_names.update(rule_info["expansion_rules"])
+
+    return lang_rule_names
+
+
+# -----------------------------------------------------------------------------
+
+
+def no_alternative_list_references(sentence: str):
+    """Validator that doesn't allow for {list} references in (an|alternative) or [an optional]."""
+
+    def visitor(e: Expression, arg: Any):
+        if isinstance(e, Alternative):
+            return True
+
+        in_alternative: bool = arg
+
+        if isinstance(e, ListReference) and in_alternative:
+            list_ref: ListReference = e
+            raise vol.Invalid(
+                f"List references not allow in alternatives (a|b) or optionals [c] ({{{list_ref.list_name}}})"
+            )
+
+        return in_alternative
+
+    _visit_expression(parse_sentence(sentence).expression, visitor, False)
+    return sentence
+
+
+def no_list_or_rule_references(sentence: str):
+    """Validator that doesn't allow for {list} or <rule> references in a sentence template."""
+
+    def visitor(e: Expression, arg: Any):
+        if isinstance(e, ListReference):
+            list_ref: ListReference = e
+            raise vol.Invalid(
+                f"List reference not allow in expansion rules: {{{list_ref.list_name}}}"
+            )
+
+        if isinstance(e, RuleReference):
+            rule_ref: RuleReference = e
+            raise vol.Invalid(
+                f"Rule reference not allowed in expansion rules: <{rule_ref.rule_name}>"
+            )
+
+    _visit_expression(parse_sentence(sentence).expression, visitor, None)
+    return sentence
+
+
+def non_empty_string(value: Any):
+    if not isinstance(value, str):
+        raise vol.Invalid(f"Not a string: {value}")
+
+    if not value.strip():
+        raise vol.Invalid("String cannot be empty")
+
+    return value
+
+
+def not_optional(sentence: str):
+    """Validator that ensures a sentence is not completely optional."""
+
+    top_expression = parse_sentence(sentence).expression
+    if isinstance(top_expression, Alternative):
+        alt: Alternative = top_expression
+        if alt.is_optional:
+            raise vol.Invalid("Expansion rule must have some required text")
+
+    return sentence
+
+
+def allowed_list_names(list_names: set[str]):
+    """Validator that ensures list reference names are valid."""
+
+    def validator(sentence: str):
+        def visitor(e: Expression, arg: Any):
+            if isinstance(e, ListReference):
+                list_ref: ListReference = e
+                if list_ref.list_name not in list_names:
+                    raise vol.Invalid(
+                        "List is not defined for language: "
+                        f"list_name=<{list_ref.list_name}>, "
+                        f"list_names={list_names}"
+                    )
+
+        _visit_expression(parse_sentence(sentence).expression, visitor, None)
+        return sentence
+
+    return validator
+
+
+def required_slots_names(slot_names: set[str]):
+    """Validator that ensures required slot names are present."""
+
+    def validator(sentence: str):
+
+        def visitor(e: Expression, arg: Any):
+            used_slot_names: set[str] = arg
+
+            if isinstance(e, ListReference):
+                list_ref: ListReference = e
+                used_slot_names.add(list_ref.slot_name)
+
+            return used_slot_names
+
+        used_slot_names: set[str] = set()
+        _visit_expression(parse_sentence(sentence).expression, visitor, used_slot_names)
+
+        missing_slots = slot_names - used_slot_names
+        if missing_slots:
+            raise vol.Invalid(f"Missing required slots in sentence: {missing_slots}")
+
+        extra_slots = used_slot_names - slot_names
+        if extra_slots:
+            raise vol.Invalid(f"Extra slots in sentence: {extra_slots}")
+
+        if sentence == "(light up|illuminate) [<the>]":
+            print(sentence, slot_names, used_slot_names)
+
+        return sentence
+
+    return validator
+
+
+def allowed_rule_names(rule_names: set[str]):
+    """Validator that ensures rule reference names are valid."""
+
+    def validator(sentence: str):
+        def visitor(e: Expression, arg: Any):
+            if isinstance(e, RuleReference):
+                rule_ref: RuleReference = e
+                if rule_ref.rule_name not in rule_names:
+                    raise vol.Invalid(
+                        f"Rule is not defined for language: <{rule_ref.rule_name}>"
+                    )
+
+        _visit_expression(parse_sentence(sentence).expression, visitor, None)
+        return sentence
+
+    return validator
+
+
+def _visit_expression(e: Expression, visitor, visitor_arg: Any):
+    result = visitor(e, visitor_arg)
+    if isinstance(e, Group):
+        grp: Group = e
+        for item in grp.items:
+            _visit_expression(item, visitor, result)

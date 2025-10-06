@@ -1,6 +1,12 @@
 language: ar
 tests:
-- sentences: []
-  intent:
-    name: HassTurnOff
-    slots: {}
+  - sentences:
+      - "اطفئ مفتاح مروحة السقف"
+      - "اغلق مفتاح مروحة السقف"
+      - "اطفئ مروحة السقف"
+    intent:
+      name: HassTurnOff
+      slots:
+        name: مروحة السقف
+    response: "تم إطفاء المروحة"
+    # response: "تم إطفاء المروحة"

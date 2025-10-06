@@ -2,4 +2,11 @@ language: tr
 intents:
   HassTurnOff:
     data:
-    - sentences: []
+      - sentences:
+          - <name> (kapa | kapat | söndür )
+      - sentences:
+          - "<name> (kapa | kapat | indir ) "
+        response: cover
+      - sentences:
+          - <area> <name> (kapa | kapat | indir )
+        response: cover_area

@@ -1,10 +1,10 @@
 language: hu
 tests:
   - sentences:
-      - "Éjjeli lámpa ki"
-      - "Éjjeli lámpa kikapcsol"
-      - "Éjjeli lámpa kikapcsolás"
+      - "kapcsold ki a mennyezeti ventilátort"
+      - "a mennyezeti ventilátort kapcsold ki"
     intent:
-      name: "HassTurnOff"
+      name: HassTurnOff
       slots:
-        name: "light.bedroom_lamp"
+        name: mennyezeti ventilátor
+    response: "A mennyezeti ventilátor kikapcsolva"

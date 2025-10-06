@@ -2,5 +2,14 @@ language: uk
 intents:
   HassTurnOff:
     data:
-    - sentences: 
-        - "<вимкни> <name>"
+      - sentences:
+          - "<вимкни> (<area> <name>|<name> [<area>])"
+        excludes_context:
+          domain:
+            - binary_sensor
+            - cover
+            - lock
+            - scene
+            - script
+            - sensor
+            - valve

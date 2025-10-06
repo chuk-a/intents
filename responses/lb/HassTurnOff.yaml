@@ -1,0 +1,10 @@
+language: lb
+responses:
+  intents:
+    HassTurnOff:
+      default: "{{ slots.name }} ass aus"
+      lights_area: "D'Luuten am {{ slots.area }} sinn aus"
+      fans_area: "D'Ventilatioun am {{ slots.area }} ass aus"
+      cover: "{{ slots.name }} ass erof"
+      cover_area: "{{ slots.area }} ass erof"
+      cover_device_class: "{{ slots.device_class }} ass erof"

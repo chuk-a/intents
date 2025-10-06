@@ -1,11 +1,23 @@
-language: "en"
+language: en
 tests:
   - sentences:
       - "turn off bedroom lamp"
       - "turn off the bedroom lamp"
       - "turn bedroom lamp off"
       - "turn the bedroom lamp off"
+      - "bedroom lamp off"
+      - "deactivate bedroom lamp"
     intent:
-      name: "HassTurnOff"
+      name: HassTurnOff
       slots:
-        name: "light.bedroom_lamp"
+        name: Bedroom Lamp
+    response: "Turned off the light"
+
+  - sentences:
+      - turn off play corner lights
+      - play corner light off
+    intent:
+      name: HassTurnOff
+      slots:
+        name: Play Corner
+    response: "Turned off the light"

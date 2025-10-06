@@ -2,7 +2,9 @@ language: ar
 intents:
   HassTurnOn:
     data:
-    - sentences: []
-      slots:
-        domain: fan
-        name: all
+      - sentences:
+          - <turn_on> [<all>] <fan> [<in>] <area>
+        slots:
+          domain: fan
+          name: all
+        response: fans_area

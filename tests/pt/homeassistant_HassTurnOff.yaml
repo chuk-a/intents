@@ -1,16 +1,19 @@
 language: pt
 tests:
   - sentences:
-      - "desliga ventoinha de teto"
-      - "desliga a ventoinha de teto"
+      - "desligue o exaustor"
+      - "desligar o interruptor do exaustor"
     intent:
-      name: "HassTurnOff"
+      name: HassTurnOff
       slots:
-        name: "fan.teto"
+        name: Exaustor
+    response: "Desligado"
+
   - sentences:
-      - "desliga a ventoinha da cozinha"
+      - "desligue a maquina do cafe por favor"
+      - "desligar maquina do cafe"
     intent:
-      name: "HassTurnOff"
+      name: HassTurnOff
       slots:
-        name: "fan.cozinha"
-        area: "cozinha"
+        name: "Maquina do Cafe"
+    response: "Desligado"

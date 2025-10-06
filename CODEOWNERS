@@ -1,6 +1,6 @@
-sentences/ar/ @Ahmed-farag36
-responses/ar/ @Ahmed-farag36
-tests/ar/ @Ahmed-farag36
+sentences/ar/ @Ahmed-farag36 @Natfaji
+responses/ar/ @Ahmed-farag36 @Natfaji
+tests/ar/ @Ahmed-farag36 @Natfaji
 
 sentences/bg/ @hristo-atanasov
 responses/bg/ @hristo-atanasov
@@ -10,29 +10,45 @@ sentences/ca/ @duhow
 responses/ca/ @duhow
 tests/ca/ @duhow
 
-sentences/cs/ @halecivo
-responses/cs/ @halecivo
-tests/cs/ @halecivo
+sentences/cs/ @halecivo @schizza
+responses/cs/ @halecivo @schizza
+tests/cs/ @halecivo @schizza
 
 sentences/da/ @MTrab @fadamsen
 responses/da/ @MTrab @fadamsen
 tests/da/ @MTrab @fadamsen
 
-sentences/de/ @Scorpoon
-responses/de/ @Scorpoon
-tests/de/ @Scorpoon
+sentences/de/ @andreasbrett @easterapps @mib1185
+responses/de/ @andreasbrett @easterapps @mib1185
+tests/de/ @andreasbrett @easterapps @mib1185
 
-sentences/el/ @dsimop
-responses/el/ @dsimop
-tests/el/ @dsimop
+sentences/de-CH/ @dontinelli
+responses/de-CH/ @dontinelli
+tests/de-CH/ @dontinelli
 
-sentences/es/ @davefx
-responses/es/ @davefx
-tests/es/ @davefx
+sentences/el/ @apo-mak @chatziko
+responses/el/ @apo-mak @chatziko
+tests/el/ @apo-mak @chatziko
 
-sentences/fr/ @benjaminlecouteux
-responses/fr/ @benjaminlecouteux
-tests/fr/ @benjaminlecouteux
+sentences/en/ @mrdarrengriffin @vividboarder
+responses/en/ @mrdarrengriffin @vividboarder
+tests/en/ @mrdarrengriffin @vividboarder
+
+sentences/es/ @davefx @duhow
+responses/es/ @davefx @duhow
+tests/es/ @davefx @duhow
+
+sentences/eu/ @urtzai
+responses/eu/ @urtzai
+tests/eu/ @urtzai
+
+sentences/fi/ @Arkkimaagi @salleq
+responses/fi/ @Arkkimaagi @salleq
+tests/fi/ @Arkkimaagi @salleq
+
+sentences/fr/ @jlpouffier @piitaya
+responses/fr/ @jlpouffier @piitaya
+tests/fr/ @jlpouffier @piitaya
 
 sentences/gl/ @cibernox
 responses/gl/ @cibernox
@@ -42,9 +58,21 @@ sentences/he/ @haim-b @leranp
 responses/he/ @haim-b @leranp
 tests/he/ @haim-b @leranp
 
-sentences/hu/ @nagyrobi
-responses/hu/ @nagyrobi
-tests/hu/ @nagyrobi
+sentences/hi/ @amankrokx
+responses/hi/ @amankrokx
+tests/hi/ @amankrokx
+
+sentences/hr/ @spuljko
+responses/hr/ @spuljko
+tests/hr/ @spuljko
+
+sentences/hu/ @nagyrobi @v1k70rk4
+responses/hu/ @nagyrobi @v1k70rk4
+tests/hu/ @nagyrobi @v1k70rk4
+
+sentences/is/ @thdg
+responses/is/ @thdg
+tests/is/ @thdg
 
 sentences/it/ @auanasgheps @xraver
 responses/it/ @auanasgheps @xraver
@@ -54,33 +82,57 @@ sentences/ka/ @hertzg
 responses/ka/ @hertzg
 tests/ka/ @hertzg
 
+sentences/ko/ @limitless00net
+responses/ko/ @limitless00net
+tests/ko/ @limitless00net
+
+sentences/lb/ @mojikosu
+responses/lb/ @mojikosu
+tests/lb/ @mojikosu
+
 sentences/lt/ @ErnestStaug
 responses/lt/ @ErnestStaug
 tests/lt/ @ErnestStaug
 
-sentences/lv/ @makstech
-responses/lv/ @makstech
-tests/lv/ @makstech
+sentences/lv/ @klejejs @makstech
+responses/lv/ @klejejs @makstech
+tests/lv/ @klejejs @makstech
 
 sentences/ml/ @arunshekher
 responses/ml/ @arunshekher
 tests/ml/ @arunshekher
 
+sentences/mn/ @chuk-a
+responses/mn/ @chuk-a
+tests/mn/ @chuk-a
+
 sentences/ms/ @zubir2k
 responses/ms/ @zubir2k
 tests/ms/ @zubir2k
+
+sentences/nb/ @LaStrada
+responses/nb/ @LaStrada
+tests/nb/ @LaStrada
+
+sentences/ne/ @Rrp13
+responses/ne/ @Rrp13
+tests/ne/ @Rrp13
 
 sentences/nl/ @TheFes
 responses/nl/ @TheFes
 tests/nl/ @TheFes
 
-sentences/pl/ @Uriziel01
-responses/pl/ @Uriziel01
-tests/pl/ @Uriziel01
+sentences/pl/ @Uriziel01 @witold-gren
+responses/pl/ @Uriziel01 @witold-gren
+tests/pl/ @Uriziel01 @witold-gren
 
-sentences/pt/ @joaorgoncalves
-responses/pt/ @joaorgoncalves
-tests/pt/ @joaorgoncalves
+sentences/pt/ @abmantis @joaorgoncalves @nikito7
+responses/pt/ @abmantis @joaorgoncalves @nikito7
+tests/pt/ @abmantis @joaorgoncalves @nikito7
+
+sentences/pt-BR/ @luyzfernando08 @mhentschke @staticdev
+responses/pt-BR/ @luyzfernando08 @mhentschke @staticdev
+tests/pt-BR/ @luyzfernando08 @mhentschke @staticdev
 
 sentences/ro/ @gabimarchidan @tetele
 responses/ro/ @gabimarchidan @tetele
@@ -94,13 +146,25 @@ sentences/sk/ @LubosKadasi
 responses/sk/ @LubosKadasi
 tests/sk/ @LubosKadasi
 
-sentences/sr/ @cvladan
-responses/sr/ @cvladan
-tests/sr/ @cvladan
+sentences/sl/ @andrejs2
+responses/sl/ @andrejs2
+tests/sl/ @andrejs2
+
+sentences/sr/ @cvladan @ddxic
+responses/sr/ @cvladan @ddxic
+tests/sr/ @cvladan @ddxic
+
+sentences/sr-Latn/ @darkobg79
+responses/sr-Latn/ @darkobg79
+tests/sr-Latn/ @darkobg79
 
 sentences/sv/ @larsdunemark
 responses/sv/ @larsdunemark
 tests/sv/ @larsdunemark
+
+sentences/sw/ @BCorbeek
+responses/sw/ @BCorbeek
+tests/sw/ @BCorbeek
 
 sentences/tr/ @alpdmrel
 responses/tr/ @alpdmrel
@@ -113,3 +177,19 @@ tests/uk/ @skynetua
 sentences/ur/ @AalianKhan
 responses/ur/ @AalianKhan
 tests/ur/ @AalianKhan
+
+sentences/vi/ @dinhchinh82
+responses/vi/ @dinhchinh82
+tests/vi/ @dinhchinh82
+
+sentences/zh-CN/ @al-one
+responses/zh-CN/ @al-one
+tests/zh-CN/ @al-one
+
+sentences/zh-HK/ @swonge
+responses/zh-HK/ @swonge
+tests/zh-HK/ @swonge
+
+sentences/zh-TW/ @bluefoxlee
+responses/zh-TW/ @bluefoxlee
+tests/zh-TW/ @bluefoxlee

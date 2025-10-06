@@ -11,7 +11,7 @@ from pathlib import Path
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: scrip/test_file <path> [--select-language]")
+        print("Usage: script/test_file <path> [--select-language]")
         sys.exit(1)
 
     target_path = Path(sys.argv[1])
@@ -19,9 +19,10 @@ def main():
 
     if len(target_path.parts) != 3 or target_path.parts[0] not in (
         "sentences",
+        "responses",
         "tests",
     ):
-        print("Error: File must be in the sentences or tests directory")
+        print("Error: File must be in the sentences, responses or tests directory")
         sys.exit(2)
 
     language = target_path.parts[1]
@@ -36,6 +37,7 @@ def main():
 
     if select_language or file_name in ("_fixtures.yaml", "_common.yaml"):
         print(f"Running all tests for {language.upper()}")
+        test_cmd.extend(["-n", "auto"])
 
     else:
         print("Running tests for file", file_name)

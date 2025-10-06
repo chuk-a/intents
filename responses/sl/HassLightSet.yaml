@@ -1,0 +1,6 @@
+language: sl
+responses:
+  intents:
+    HassLightSet:
+      brightness: "Svetlost nastavljena"
+      color: "Barva nastavljena"

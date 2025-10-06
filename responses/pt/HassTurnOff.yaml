@@ -1,0 +1,11 @@
+language: pt
+responses:
+  intents:
+    HassTurnOff:
+      default: "Desligado"
+      lights_area: "Luzes desligadas"
+      fans_area: "Ventoinhas desligadas"
+      cover: "Fechado"
+      light_all: "Todas as luzes desligadas"
+      fan_all: "Todas as ventoinhas desligadas"
+      cover_device_class: "Fechado {{ slots.device_class }}"

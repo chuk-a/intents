@@ -1,6 +1,14 @@
 language: lt
 tests:
-- sentences: []
-  intent:
-    name: HassTurnOn
-    slots: {}
+  - sentences:
+      - Įjunk ventiliatorius svetainėje
+      - Paleisk svetainės ventiliatorius
+    intent:
+      name: HassTurnOn
+      slots:
+        area:
+          - Svetainė
+          - Svetainės
+          - Svetainėje
+        domain: fan
+        name: all

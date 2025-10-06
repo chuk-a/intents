@@ -1,15 +1,15 @@
 language: ca
 tests:
-- sentences:
-    - apaga Interruptor Cuina
-    - Para la Interruptor Cuina
-  intent:
-    name: HassTurnOff
-    slots:
-      name: switch.kitchen
-- sentences:
-    - apaga el ventilador sostre
-  intent:
-    name: HassTurnOff
-    slots:
-      name: fan.ceiling
+  - sentences:
+      - apaga Interruptor Cuina
+      - Para la Interruptor Cuina
+    intent:
+      name: HassTurnOff
+      slots:
+        name: Interruptor Cuina
+  - sentences:
+      - apaga el ventilador sostre
+    intent:
+      name: HassTurnOff
+      slots:
+        name: Ventilador sostre

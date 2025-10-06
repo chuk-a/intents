@@ -1,6 +1,13 @@
 language: lt
 tests:
-- sentences: []
-  intent:
-    name: HassTurnOff
-    slots: {}
+  - sentences:
+      - Išjunk virtuvėje šviesą
+      - Išjunk šviesas virtuvėje
+    intent:
+      name: HassTurnOff
+      slots:
+        area:
+          - Virtuvė
+          - Virtuvės
+          - Virtuvėje
+        domain: light

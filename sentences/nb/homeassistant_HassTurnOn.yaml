@@ -1,7 +1,30 @@
-language: 'nb'
+language: "nb"
 intents:
   HassTurnOn:
     data:
-    - sentences:
-      - "(skru | slå) på {name}[n]"
-      - "(skru | slå) {name}[n] på"
+      - sentences:
+          - "<skru_på> <navn>"
+          - "(skru|slå) <navn> på"
+        excludes_context:
+          domain:
+            - cover
+            - scene
+            - sensor
+            - script
+            - lock
+            - binary_sensor
+            - vacuum
+            - valve
+      - sentences:
+          - "<åpne> <navn>"
+          - "<åpne> <navn> <i_på> <område>"
+        excludes_context:
+          domain:
+            - cover
+            - scene
+            - sensor
+            - script
+            - lock
+            - binary_sensor
+            - vacuum
+            - valve

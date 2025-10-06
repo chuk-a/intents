@@ -2,5 +2,11 @@ language: sv
 intents:
   HassTurnOn:
     data:
-    - sentences:
-        - "<slå_på> <name>"
+      - sentences:
+          - <slå_på> <name>
+        excludes_context:
+          domain:
+            - light
+            - vacuum
+            - script
+            - cover

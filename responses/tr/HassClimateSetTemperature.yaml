@@ -1,0 +1,5 @@
+language: tr
+responses:
+  intents:
+    HassClimateSetTemperature:
+      default: Sıcaklık {{ slots.temperature }} derece olarak ayarlandı.

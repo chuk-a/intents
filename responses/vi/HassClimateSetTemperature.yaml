@@ -1,0 +1,5 @@
+language: vi
+responses:
+  intents:
+    HassClimateSetTemperature:
+      default: "đã thiết lập nhiệt độ"

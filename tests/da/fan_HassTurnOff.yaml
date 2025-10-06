@@ -8,9 +8,10 @@ tests:
     intent:
       name: HassTurnOff
       slots:
-        area: kitchen
+        area: Køkken
         domain: fan
-        name: all
+    response: "Slukkede ventilatorene"
+
   - sentences:
       - "sluk blæser på badeværelse"
       - "sluk for blæseren på badeværelset"
@@ -19,22 +20,37 @@ tests:
     intent:
       name: HassTurnOff
       slots:
-        area: bathroom
+        area: Badeværelse
         domain: fan
-        name: all
+    response: "Slukkede ventilatorene"
+
   - sentences:
       - "sluk blæser i saunaen"
     intent:
       name: HassTurnOff
       slots:
-        area: sauna
+        area: Sauna
         domain: fan
-        name: all
+    response: "Slukkede ventilatorene"
+
   - sentences:
       - "sluk blæser i stuen"
     intent:
       name: HassTurnOff
       slots:
-        area: living_room
+        area: Stue
         domain: fan
-        name: all
+    response: "Slukkede ventilatorene"
+
+  - sentences:
+      - "sluk ventilatorene"
+      - "stop alle ventilatorene herinde"
+      - "sluk ventilatoren her"
+    intent:
+      name: HassTurnOff
+      context:
+        area: Stue
+      slots:
+        domain: fan
+        area: Stue
+    response: "Slukkede ventilatorene"

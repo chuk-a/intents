@@ -3,5 +3,5 @@ intents:
   HassTurnOff:
     data:
       - sentences:
-        - "<turn_off> [<the>] <name>"
-        - "[<the>] <name> <turn_off>"
+          - <turn_off> [<the>] <name>
+          - "[<the>] <name> <turn_off>"

@@ -1,6 +1,67 @@
-language: "sk"
+language: sk
 tests:
-- sentences: []
-  intent:
-    name: HassTurnOff
-    slots: {}
+  # vypni konkrétny ventilátor
+  - sentences:
+      - vypni biely ventilátor
+    intent:
+      name: HassTurnOff
+      slots:
+        domain: fan
+        name:
+          - biely ventilátor
+    response: Ventilátor biely ventilátor bol vypnutý
+
+  # vypni ventilátor v konkrétnej miestnosti
+  - sentences:
+      - vypni ventilátor v obývačke
+      - vypni vetrák v obývačke
+    intent:
+      name: HassTurnOff
+      slots:
+        domain: fan
+        area: obývačke
+    response: Ventilátor bol vypnutý
+
+  # vypni všetky ventilátory v miestnosti
+  - sentences:
+      - vypni všetky ventilátory v obývačke
+      - vypni všetky vetráky v obývačke
+      - vypni ventilátory v obývačke
+      - vypni vetráky v obývačke
+    intent:
+      name: HassTurnOff
+      slots:
+        area:
+          - obývačka
+          - obývačke
+          - obývačku
+        domain: fan
+        name: all
+    response: Ventilátory v obývačke boli vypnuté
+
+  # zapni vetranie konkrétnej miestnosti
+  - sentences:
+      - vypni ventiláciu obývačky
+      - vypni vetranie obývačky
+    intent:
+      name: HassTurnOff
+      slots:
+        area: obývačky
+        domain: fan
+        name: all
+    response: Vetranie obývačky bolo vypnuté
+
+  # vypni ventilátor v aktuálnej miestnosti
+  - sentences:
+      - vypni stropný ventilátor
+      - vypni tu stropný ventilátor
+      - stropný ventilátor vypnúť
+      - vypnúť ventilátor v tejto miestnosti
+    intent:
+      name: HassTurnOff
+      slots:
+        area: obývačka
+        domain: fan
+      context:
+        area: obývačka
+    response: Vetranie tu bolo vypnuté

@@ -1,6 +1,5 @@
-language: 'nb'
+language: nb
 responses:
   intents:
     HassClimateGetTemperature:
-      success:
-        - "{{ state.state }} grader"
+      default: "{{ state_attr(state.entity_id, 'current_temperature') }}"

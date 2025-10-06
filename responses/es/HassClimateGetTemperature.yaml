@@ -2,5 +2,7 @@ language: es
 responses:
   intents:
     HassClimateGetTemperature:
-      success:
-        - "{{ state.state }} grados"
+      default: >
+        {% set current_temperature = state_attr(state.entity_id, 'current_temperature') %}
+        {% set temperature = state.state if current_temperature is none else current_temperature %}
+        {{ temperature | float | abs | round(1) | replace('.0', '') | replace('.',',') }} {{ 'grado' if temperature | float | abs == 1 else 'grados' }} {{ 'bajo cero' if temperature | float < 0 else '' }}

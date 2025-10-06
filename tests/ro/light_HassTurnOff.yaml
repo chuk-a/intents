@@ -1,22 +1,60 @@
 language: ro
 tests:
   - sentences:
+      - "stinge plafoniera neagra"
+    intent:
+      name: HassTurnOff
+      slots:
+        name: plafoniera neagra
+        domain: light
+      context:
+        domain: light
+    response: "Am stins lumina"
+  - sentences:
       - "stinge lumina din garaj"
       - "oprește lumina din garaj"
-      - "stop lumina din garaj"
-      - "închide lumina din garaj"
+      - "stop luminile din garaj"
+      - "închide toate luminile din garaj"
     intent:
-      name: "HassTurnOff"
+      name: HassTurnOff
       slots:
-        area: garage
+        area: "Garaj"
         domain: light
+    response: "Am stins luminile"
   - sentences:
       - "stinge lumina din sufragerie"
       - "oprește lumina din sufragerie"
-      - "stop lumina din sufragerie"
-      - "închide lumina din sufragerie"
+      - "stop luminile din sufragerie"
+      - "închide toate luminile din sufragerie"
     intent:
-      name: "HassTurnOff"
+      name: HassTurnOff
       slots:
-        area: living_room
+        area:
+          - "Sufragerie"
+          - "Camera de zi"
         domain: light
+    response: "Am stins luminile"
+  - sentences:
+      - "stinge lumina"
+      - "opreste lumina aici"
+      - "opreste toate luminile"
+      - "stinge toate luminile de aici"
+    intent:
+      name: HassTurnOff
+      context:
+        area: Dormitor
+      slots:
+        domain: light
+        area: Dormitor
+    response: "Am stins luminile"
+  - sentences:
+      - "stinge lumina de la primul etaj"
+      - "oprește lumina la primul etaj"
+      - "stop luminile din primul etaj"
+      - "stinge toate luminile de la primul etaj"
+    intent:
+      name: HassTurnOff
+      slots:
+        floor: Primul etaj
+        domain: light
+    response: "Am stins luminile"

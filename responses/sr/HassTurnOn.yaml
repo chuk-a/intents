@@ -1,0 +1,12 @@
+language: sr
+responses:
+  intents:
+    HassTurnOn:
+      default: "{{ state.domain }} је укључено"
+      lights_area: "Светла су укључена"
+      fans_area: "Вентилатори су укључени"
+      cover: "Отварам"
+      cover_device_class: "Отварам {{ slots.device_class }}"
+      scene: "Активирано"
+      script: "Извршавам"
+      lock: "Закључано"

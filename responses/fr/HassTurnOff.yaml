@@ -1,0 +1,9 @@
+language: fr
+responses:
+  intents:
+    HassTurnOff:
+      default: "Éteint"
+      fans: "Ventilateurs éteints"
+      cover: "Fermeture en cours"
+      lock: "Déverrouillé"
+      valve: "Fermé"

@@ -1,9 +1,27 @@
-language: "it"
+language: it
 tests:
   - sentences:
-      - "accendi l'interruttore cucina"
-      - "accendi interruttore cucina"
+      - accendi l'interruttore cucina
+      - accendi interruttore cucina
+      - puoi accendere l'interruttore cucina
+      - potresti attivare l'interruttore cucina per favore
+      - per favore accendi interruttore cucina
+      - attiva interruttore cucina grazie
     intent:
-      name: "HassTurnOn"
+      name: HassTurnOn
       slots:
-        name: "switch.cucina"
+        name: Interruttore Cucina
+  - sentences:
+      - apri la tenda sinistra
+    intent:
+      name: HassTurnOn
+      slots:
+        name: Tenda Sinistra
+  - sentences:
+      - apri la tenda sinistra del soggiorno
+      - alza la tenda sinistra del soggiorno
+    intent:
+      name: HassTurnOn
+      slots:
+        name: Tenda Sinistra
+        area: Soggiorno

@@ -1,0 +1,12 @@
+language: de-CH
+intents:
+  HassClimateGetTemperature:
+    data:
+      - sentences:
+          - "Weli Temperatur (het|zeigt) <name>"
+
+      - sentences:
+          - "Wie (warm|chaut|chalt) (isch es|isch's|ischs|isch) <area>"
+          - "Weli Temperatur (isch es|isch's|isch|het|het ds|het's) <area>"
+          - "Wie (hoch|höch) isch d Temperatur <area>"
+        response: temp_area

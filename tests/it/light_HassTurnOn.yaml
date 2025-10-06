@@ -1,10 +1,37 @@
-language: "it"
+language: it
 tests:
   - sentences:
-      - "accendi la luce della cucina"
-      - "accendi tutte le luci in cucina"
+      - accendi la luce della cucina
+      - accendi tutte le luci in cucina
+      - in cucina accendi la luce
     intent:
-      name: "HassTurnOn"
+      name: HassTurnOn
       slots:
-        area: "cucina"
-        domain: "light"
+        area: Cucina
+        domain: light
+    response: Ho acceso le luci in cucina
+  - sentences:
+      - accendi la luce
+      - accendi la luce qua
+      - accendi la luce in questa stanza
+    intent:
+      name: HassTurnOn
+      context:
+        area: Soggiorno
+      slots:
+        domain: light
+        area: Soggiorno
+    response: Ho acceso le luci in Soggiorno
+
+  # Accendi tutte le luci della casa
+  - sentences:
+      - accendi tutte le luci
+      - accendi la luce dappertutto
+      - accendi le luci in tutta casa
+      - illumina dappertutto
+      - illumina tutta la casa
+    intent:
+      name: HassTurnOn
+      slots:
+        domain: light
+    response: Ho acceso tutte le luci

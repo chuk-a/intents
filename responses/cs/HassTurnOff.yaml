@@ -1,0 +1,15 @@
+language: cs
+responses:
+  intents:
+    HassTurnOff:
+      default: "Vypnuto"
+      lights_area: "Světla zhasnuta"
+      fan: "Větrák vypnut"
+      fans_area: "Větráky vypnuty"
+      light: "Zhasnuto"
+      light_all: "Všechna světla byla zhasnuta"
+      cover: "Zavřeno"
+      garage: "Vrata zavřena"
+      curtain: "Zataženo"
+      valve: "Zavřeno"
+      lock: "Odemčeno"

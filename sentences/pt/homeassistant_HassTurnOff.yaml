@@ -3,5 +3,12 @@ intents:
   HassTurnOff:
     data:
       - sentences:
-          - "(desligue | desliga) [(o | a)] <nome>"
-          - "(desligue | desliga) [(o | a)] <nome> <na_zona>"
+          - "<desligar> [a[s]|o[s]] [luz[es]|interruptor[es]] [do|da] <nome>"
+        excludes_context:
+          domain:
+            - binary_sensor
+            - cover
+            - lock
+            - scene
+            - script
+            - sensor

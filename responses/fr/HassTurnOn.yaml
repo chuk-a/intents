@@ -1,0 +1,11 @@
+language: fr
+responses:
+  intents:
+    HassTurnOn:
+      default: "Allumé"
+      fans: "Ventilateurs allumés"
+      cover: "Ouverture en cours"
+      lock: "Verrouillé"
+      scene: "Scène activée"
+      script: "Script démarré"
+      valve: "Ouvert"

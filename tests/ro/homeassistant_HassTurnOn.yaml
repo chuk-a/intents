@@ -1,11 +1,9 @@
 language: ro
 tests:
   - sentences:
-      - "start lumina din camera"
-      - "pornește lumina din camera"
-      - "deschide lumina din camera"
-      - "aprinde lumina din camera"
+      - "porneste hota"
     intent:
-      name: "HassTurnOn"
+      name: HassTurnOn
       slots:
-        name: "light.bedroom_lamp"
+        name: "hota"
+    response: "Am pornit hota"

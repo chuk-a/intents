@@ -1,0 +1,6 @@
+language: fi
+responses:
+  intents:
+    HassLightSet:
+      brightness: "Kirkkaus asetettu"
+      color: "Väri asetettu"

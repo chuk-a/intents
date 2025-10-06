@@ -1,23 +1,53 @@
 language: pl
 tests:
   - sentences:
-      - "Wyłącz proszę lampkę nocną"
+      - "Wyłącz lampkę nocną"
       - "Zgaś lampkę nocną"
     intent:
-      name: "HassTurnOff"
+      name: HassTurnOff
       slots:
-        name: "light.bedroom_lamp"
+        name:
+          - "Lampę nocną"
+          - "Lampka nocna"
+          - "Lampkę nocną"
+          - "Lampki nocnej"
+    response: "Wyłączono światło"
+  - sentences:
+      - "W sypialni wyłącz lampkę nocną"
+      - "Wyłącz lampkę nocną w sypialni"
+    intent:
+      name: HassTurnOff
+      slots:
+        area:
+          - "Sypialnia"
+          - "Sypialni"
+        name:
+          - "Lampę nocną"
+          - "Lampka nocna"
+          - "Lampkę nocną"
+          - "Lampki nocnej"
+    response: "Wyłączono światło w sypialni"
   - sentences:
       - "Wyłącz proszę wentylator sufitowy"
       - "Zatrzymaj wentylator sufitowy"
     intent:
-      name: "HassTurnOff"
+      name: HassTurnOff
       slots:
-        name: "fan.ceiling"
+        name:
+          - "Wentylator sufitowy"
+          - "Wiatrak sufitowy"
+    response: "Wyłączono wentylator"
   - sentences:
-      - "Zgaś lampę nocną"
-      - "Wyłącz lampkę nocną"
+      - "Zatrzymaj wentylator sufitowy w salonie"
+      - "W salonie wyłącz wentylator sufitowy"
     intent:
-      name: "HassTurnOff"
+      name: HassTurnOff
       slots:
-        name: "light.bedroom_lamp"
+        area:
+          - "Salonie"
+          - "Salonu"
+          - "Salon"
+        name:
+          - "Wentylator sufitowy"
+          - "Wiatrak sufitowy"
+    response: "Wyłączono wentylator w salonie"

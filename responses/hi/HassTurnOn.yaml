@@ -1,0 +1,5 @@
+language: hi
+responses:
+  intents:
+    HassTurnOn:
+      default: "{{ slots.name }}"

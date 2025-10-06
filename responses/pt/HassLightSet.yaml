@@ -1,0 +1,6 @@
+language: pt
+responses:
+  intents:
+    HassLightSet:
+      brightness: "Brilho definido"
+      color: "Cor definida"

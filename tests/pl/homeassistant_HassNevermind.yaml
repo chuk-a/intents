@@ -1,0 +1,8 @@
+language: pl
+tests:
+  - sentences:
+      - "Nieważne"
+      - "Anuluj"
+      - "Nieistotne"
+    intent:
+      name: HassNevermind

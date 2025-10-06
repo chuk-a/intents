@@ -1,0 +1,6 @@
+language: nb
+responses:
+  intents:
+    HassLightSet:
+      brightness: "Lysstyrke justert"
+      color: "Farge endret"

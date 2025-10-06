@@ -1,0 +1,6 @@
+language: cs
+responses:
+  intents:
+    HassLightSet:
+      brightness: "Jas nastaven"
+      color: "Barva nastavena"

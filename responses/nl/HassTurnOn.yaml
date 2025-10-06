@@ -1,0 +1,13 @@
+language: nl
+responses:
+  intents:
+    HassTurnOn:
+      default: "Aangezet"
+      lights_area: "Verlichting aangezet"
+      fans_area: "Ventilatoren aangezet"
+      cover: "Geopend"
+      scene: "Geactiveerd"
+      script: "Gestart"
+      lock: "Vergrendeld"
+      lock_area: "Sloten vergrendeld"
+      valve: "Geopend"

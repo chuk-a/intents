@@ -1,0 +1,8 @@
+language: hu
+responses:
+  intents:
+    HassLightSet:
+      brightness_1: "A lámpa fényereje beállítva"
+      color_1: "A lámpa színe beállítva"
+      brightness_több: "A lámpák fényereje beállítva"
+      color_több: "A lámpák színe beállítva"

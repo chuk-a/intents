@@ -1,12 +1,25 @@
 language: fr
 tests:
+  # area
   - sentences:
-      - "Quelle est la température?"
+      - Quelle est la température du salon?
+      - Combien fait-il dans le salon?
+      - Il fait combien dans le salon?
     intent:
-      name: "HassClimateGetTemperature"
-  - sentences:
-      - "Quelle est la température du salon?"
-    intent:
-      name: "HassClimateGetTemperature"
+      name: HassClimateGetTemperature
       slots:
-        area: "living_room"
+        area: salon
+    response: "21 degrés"
+
+  # context awareness
+  - sentences:
+      - Quelle est la température ?
+      - Combien fait-il?
+      - Il fait combien?
+    intent:
+      name: HassClimateGetTemperature
+      context:
+        area: salon
+      slots:
+        area: salon
+    response: "21 degrés"

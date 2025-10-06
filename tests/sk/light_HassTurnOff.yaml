@@ -1,38 +1,91 @@
-language: "sk"
+language: sk
 tests:
   - sentences:
-      - "vypni všetky svetlá v kuchyni"
-      - "vypni svetlá v kuchyni"
-      - "vypni osvetlenie v kuchyni"
-      - "vypni svetlo v kuchyni"
-      - "zahas všetky svetlá v kuchyni"
-      - "zahas svetlá v kuchyni"
-      - "zahas osvetlenie v kuchyni"
-      - "zahas svetlo v kuchyni"
-      - "zhasni všetky svetlá v kuchyni"
-      - "zhasni svetlá v kuchyni"
-      - "zhasni osvetlenie v kuchyni"
-      - "zhasni svetlo v kuchyni"
+      - vypni všetky svetlá v kuchyni
+      - vypni svetlá v kuchyni
+      - vypni osvetlenie v kuchyni
+      - zahas všetky svetlá v kuchyni
+      - zahas svetlá v kuchyni
+      - zahas osvetlenie v kuchyni
+      - zhasni všetky svetlá v kuchyni
+      - zhasni svetlá v kuchyni
+      - zhasni osvetlenie v kuchyni
     intent:
-      name: "HassTurnOff"
+      name: HassTurnOff
       slots:
-        area: "kitchen"
-        domain: "light"
-  - sentences:
-      - "zhasni svetlo pred vchodom"
-      - "zhasni pred vchodom"
-      - "zhasni vo vchode"
-      - "zhasni vchod"
-    intent:
-      name: "HassTurnOff"
-      slots:
-        area: entrance
+        area:
+          - kuchyňa
+          - kuchyni
+          - kuchyne
+          - kuchyňu
+        name: all
         domain: light
+    response: "Svetlá boli zhasnuté"
+
   - sentences:
-      - "zhasni na chodbe"
-      - "zhasni chodbu"
+      - vypni svetlo v kuchyni
+      - zhasni svetlo v kuchyni
     intent:
-      name: "HassTurnOff"
+      name: HassTurnOff
       slots:
-        area: hallway
+        area: kuchyni
         domain: light
+    response: Svetlo bolo zhasnuté
+
+  - sentences:
+      - zahas nočnú lampu
+      - zhasni nočnú lampu
+    intent:
+      name: HassTurnOff
+      slots:
+        name: nočnú lampu
+        domain: light
+    response: Zapínam nočnú lampu
+
+  - sentences:
+      - zhasni svetlá pred vchodom
+      - zhasni pred vchodom
+      - zhasni vo vchode
+      - zhasni vchod
+    intent:
+      name: HassTurnOff
+      slots:
+        area:
+          - pred vchodom
+          - vchode
+          - vchod
+        name: all
+        domain: light
+    response: Svetlá boli zhasnuté
+
+  - sentences:
+      - zhasni na chodbe
+      - zhasni chodbu
+    intent:
+      name: HassTurnOff
+      slots:
+        area:
+          - chodba
+          - chodbe
+          - chodbu
+          - chodby
+        name: all
+        domain: light
+    response: Svetlá boli zhasnuté
+
+  # satellite
+  - sentences:
+      - "vypni všetky svetlá"
+      - "vypni osvetlenie"
+      - "vypni svetlo"
+      - "zahas lampy"
+      - "zhasni"
+    intent:
+      name: HassTurnOff
+      context:
+        area: "Obývačka"
+      slots:
+        domain: light
+        area: "Obývačka"
+    response:
+      - Svetlá tu boli zhasnuté

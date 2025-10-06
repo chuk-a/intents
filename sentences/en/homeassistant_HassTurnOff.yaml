@@ -1,7 +1,16 @@
-language: "en"
+language: en
 intents:
   HassTurnOff:
     data:
       - sentences:
-          - "turn off <name>"
-          - "turn <name> off"
+          - "<turn> off (<area> <name>|<name> [in <area>])"
+          - "[<turn>] (<area> <name>|<name> [in <area>]) [to] off"
+          - "deactivate (<area> <name>|<name> [in <area>])"
+        excludes_context:
+          domain:
+            - binary_sensor
+            - cover
+            - lock
+            - scene
+            - script
+            - sensor

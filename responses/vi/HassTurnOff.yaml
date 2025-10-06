@@ -1,0 +1,13 @@
+language: vi
+responses:
+  intents:
+    HassTurnOff:
+      default: "đã thực hiện"
+      lights_area: "đã tắt đèn"
+      fans_area: "đã tắt quạt"
+      cover: "đã đóng"
+      light_all: "đã tắt tất cả các đèn"
+      fan_all: "đã tắt tất cả quạt"
+      cover_device_class: "đã đóng {{ slots.device_class }}"
+      lock: "đã mở khóa"
+      valve: "đã đóng van"

@@ -1,0 +1,6 @@
+language: hr
+responses:
+  intents:
+    HassLightSet:
+      brightness: "Jačina svjetla je postavljena"
+      color: "Boja svjetla je postavljena"

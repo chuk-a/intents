@@ -2,5 +2,9 @@ language: sv
 intents:
   HassTurnOff:
     data:
-    - sentences:
-        - "<slå_av> <name>"
+      - sentences:
+          - <slå_av> <name>
+        excludes_context:
+          domain:
+            - light
+            - cover

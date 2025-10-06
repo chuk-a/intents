@@ -1,11 +1,23 @@
-language: 'nb'
+language: nb
 tests:
-- intent:
-    name: HassTurnOn
-    slots:
-      name: "fan.ceiling"
-  sentences:
-  - "slå på tak vifte"
-  - "skru på tak viften"
-  - "slå tak vifte på"
-  - "skru tak viften på"
+  - intent:
+      name: HassTurnOn
+      slots:
+        name: Takvifte
+    sentences:
+      - slå på takvifte
+      - skru på takviften
+      - slå takvifte på
+      - skru takviften på
+    response: "Slo på takvifte"
+
+  - intent:
+      name: HassTurnOn
+      slots:
+        name: Garasjelys
+    sentences:
+      - slå på garasjelys
+      - skru på garasjelyset
+      - slå garasjelys på
+      - skru garasjelyset på
+    response: "Slo på garasjelys"

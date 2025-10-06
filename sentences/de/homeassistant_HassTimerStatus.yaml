@@ -1,0 +1,24 @@
+language: de
+intents:
+  HassTimerStatus:
+    data:
+      - sentences:
+          - "Timer Status"
+          - "Status (des|meines) Timers"
+          - "wie lange (läuft|braucht|hat|dauert|geht) (der|mein) Timer"
+          - "was macht (der|mein) Timer"
+          - "<timer_start> Timer Status"
+          - "Status (des|meines) <timer_start> Timers"
+          - "wie lange (läuft|braucht|hat|dauert|geht) (der|mein) <timer_start> Timer"
+          - "was macht (der|mein) <timer_start> Timer"
+          - "{area} Timer Status"
+          - "Status (des|meines) {area} Timers"
+          - "Status (des|meines) Timers <area>"
+          - "wie lange (läuft|braucht|hat|dauert|geht) (der|mein) {area} Timer"
+          - "wie lange (läuft|braucht|hat|dauert|geht) (der|mein) Timer <area>"
+          - "was macht (der|mein) {area} Timer"
+          - "was macht (der|mein) Timer <area>"
+          - "{timer_name:name} Timer Status"
+          - "Status (des|meines) {timer_name:name} Timers"
+          - "wie lange (läuft|braucht|hat|dauert|geht) (der|mein) {timer_name:name} Timer"
+          - "was macht (der|mein) {timer_name:name} Timer"

@@ -1,0 +1,18 @@
+language: cs
+intents:
+  HassMediaNext:
+    data:
+      - sentences:
+          - "<dalsi> [trak|stopa|skladba|písnička|položka|program] [<v>] {name}"
+          - "((přeskoč|přepni) [[na další|tuto|tento] (písničku|stopu|skladbu|program)];[<v>] {name})"
+        requires_context:
+          domain: media_player
+      - sentences:
+          - "<dalsi> [trak|stopa|skladba|písnička|položka|program]"
+          - "((přeskoč|přepni) [[na další|tuto|tento] (písničku|stopu|skladbu|program)])"
+        requires_context:
+          area:
+            slot: true
+      - sentences:
+          - "<dalsi> [trak|stopa|skladba|písnička|položka|program] <area>"
+          - "((přeskoč|přepni) [[na další|tuto|tento] (písničku|stopu|skladbu|program)];<area>)"

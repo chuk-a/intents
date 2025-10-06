@@ -1,16 +1,20 @@
 language: pt
 tests:
   - sentences:
-      - "liga ventoinha de teto"
-      - "liga a ventoinha de teto"
+      - "liga o Exaustor"
+      - "ligar o Exaustor por favor"
+      - "liga o interruptor do Exaustor"
+      - "ligue Exaustor"
     intent:
-      name: "HassTurnOn"
+      name: HassTurnOn
       slots:
-        name: "fan.teto"
+        name: Exaustor
+    response: "Ligado"
+
   - sentences:
-      - "liga a ventoinha da cozinha"
+      - liga a maquina do cafe
     intent:
-      name: "HassTurnOn"
+      name: HassTurnOn
       slots:
-        name: "fan.cozinha"
-        area: "cozinha"
+        name: Maquina do Cafe
+    response: "Ligado"

@@ -1,0 +1,6 @@
+language: vi
+responses:
+  intents:
+    HassLightSet:
+      brightness: "đã thiết lập độ sáng"
+      color: "đã thiết lập màu sắc"

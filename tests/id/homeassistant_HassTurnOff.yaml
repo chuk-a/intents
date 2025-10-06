@@ -1,6 +1,9 @@
 language: id
 tests:
-  - sentences: []
+  - sentences:
+      - matikan lampu tidur
+      - matiin lampu tidur
     intent:
       name: HassTurnOff
-      slots: {}
+      slots:
+        name: Lampu Tidur

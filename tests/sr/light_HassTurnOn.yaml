@@ -1,26 +1,16 @@
 language: sr
 tests:
   - sentences:
-      - "Упали светло у дневној соби"
+      - Укључи светло у дневној соби
+      - Укључи сва светла у дневној соби
+      - Упали светла у дневној соби
+      - Укључи светла у дневној соби
+      - упали у дневној соби сва светла
+      - укључи у дневној соби сва светла
     intent:
       name: HassTurnOn
       slots:
-        area: living_room
+        area:
+          - дневној соби
         domain: light
-        name: all
-  - sentences:
-      - "Упали сва светла у кухињи"
-    intent:
-      name: HassTurnOn
-      slots:
-        area: kitchen
-        domain: light
-        name: all
-  - sentences:
-      - "Укључи светло у ходнику"
-    intent:
-      name: HassTurnOn
-      slots:
-        area: hallway
-        domain: light
-        name: all
+    response: "Светла су укључена"

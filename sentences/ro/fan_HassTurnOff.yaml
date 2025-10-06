@@ -2,7 +2,16 @@ language: ro
 intents:
   HassTurnOff:
     data:
-    - sentences: []
-      slots:
-        domain: fan
-        name: all
+      - sentences:
+          - "<opreste> ((<ventilatorul>|[toate ]<ventilatoarele>);<din_zona>)"
+        slots:
+          domain: fan
+        response: fans_area
+      - sentences:
+          - "<opreste> (<ventilatorul>|[toate ]<ventilatoarele>)[ [de ]aici]"
+        slots:
+          domain: fan
+        requires_context:
+          area:
+            slot: true
+        response: fans_area

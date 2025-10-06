@@ -1,26 +1,28 @@
-language: "pl"
+language: pl
 tests:
   - sentences:
       - "Ustaw temperaturę na 30°"
+      - "Ustaw temperaturę na 30 stopni"
       - "Przestaw temperaturę na 30°"
+      - "Przestaw temperaturę na 30 stopni"
+      - "Nastaw temperaturę na 30°"
+      - "Nastaw temperaturę na 30 stopni"
     intent:
-      name: "HassClimateSetTemperature"
+      name: HassClimateSetTemperature
       slots:
         temperature: 30
+    response: "Ustawiono temperaturę"
   - sentences:
-      - "Ustaw temperaturę na 30° C"
-      - "Przestaw temperaturę na 30° C"
+      - "Ustaw temperaturę w sypialni na 50 stopni"
+      - "W sypialni ustaw temperaturę na 50 stopni"
+      - "Ustaw temperaturę na 50 stopni w sypialni"
+      - "Przestaw temperaturę w sypialni na 50 stopni"
+      - "Nastaw temperaturę w sypialni na 50 stopni"
     intent:
-      name: "HassClimateSetTemperature"
+      name: HassClimateSetTemperature
       slots:
-        temperature: 30
-        temperature_unit: "celsius"
-  - sentences:
-      - "Ustaw temperaturę w sypialni na 50 stopni fahrenheita"
-      - "Przestaw temperaturę w sypialni na 50 stopni fahrenheita"
-    intent:
-      name: "HassClimateSetTemperature"
-      slots:
-        area: "bedroom"
+        area:
+          - "Sypialnia"
+          - "Sypialni"
         temperature: 50
-        temperature_unit: "fahrenheit"
+    response: "Ustawiono temperaturę"

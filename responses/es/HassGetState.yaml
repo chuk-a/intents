@@ -1,0 +1,107 @@
+language: es
+responses:
+  intents:
+    HassGetState:
+      default: "{{ state.state_with_unit }}" # used mostly for custom sentences
+
+      # the number of names returned is limited to 4, in case there are more, the first 3 names and the remaining count is returned
+      # with 4 names or less, the names are joined with a comma ", " and the last name is joined with " and "
+      one: |
+        {% if state.domain == "sensor" %}
+          El dispositivo {{ slots.name | capitalize }} indica {{ state.state_with_unit }}
+        {% else %}
+          El dispositivo {{ slots.name | capitalize }} está {{ state.state_with_unit }}
+        {% endif %}
+
+      one_yesno: |
+        {% if query.matched %}
+          Sí
+        {% else %}
+          {% if state.domain == "person" %}
+            No, está en {{ state.state_with_unit }}
+          {% else %}
+            No, su estado es {{ state.state_with_unit }}
+          {% endif %}
+        {% endif %}
+
+      any: |
+        {% if query.matched %}
+          {% set match = query.matched | map(attribute="name") | sort | list %}
+          {% if match | length > 4 %}
+            Sí, {{ match[:3] | join(", ") }} y otros {{ (match | length - 3) }} dispositivos más
+          {%- else -%}
+            {% if match | length == 1 %}
+              {% if state.domain == "person" %}
+                Sí, {{ match|first }}
+              {% else %}
+                Sí, el dispositivo {{ match|first }}
+              {% endif %}
+            {% else %}
+              Sí,
+              {% for name in match -%}
+                {% if not loop.first and not loop.last %}, {% elif loop.last and not loop.first %} y {% endif -%}
+                {{ name }}
+              {%- endfor -%}
+            {% endif %}
+          {% endif %}
+        {% else %}
+          No
+        {% endif %}
+
+      all: |
+        {% if not query.unmatched: %}
+          Sí
+        {% else %}
+          {% set no_match = query.unmatched | map(attribute="name") | sort | list %}
+          {% if no_match | length > 4 %}
+            {% if state.domain == "person" %}
+              No, ni {{ no_match[:3] | join(", ni ") }} ni otros {{ (no_match | length - 3) }} están en {{slots.state}}
+            {% else %}
+              No, ni {{ no_match[:3] | join(", ni ") }} ni otros {{ (no_match | length - 3) }} dispositivos tienen ese estado
+            {% endif %}
+          {% else %}
+            {% if no_match | length == 1 %}
+              {% if state.domain == "person" %}
+                No, {{ no_match|first }} no está en {{slots.state}}
+              {% else %}
+                No, el dispositivo {{ no_match|first }} no tiene ese estado
+              {% endif %}
+            {%- else -%}
+              No, ni
+              {% for name in no_match -%}
+                {% if not loop.first and not loop.last %}, ni {% elif loop.last and not loop.first %} ni {% endif -%}
+                {{ name }}
+              {%- endfor %}
+              {% if state.domain == "person" %}
+                están en {{slots.state}}
+              {% else %}
+                tienen el estado {{slots.state}}
+              {% endif %}
+            {% endif %}
+          {% endif %}
+        {% endif %}
+
+      which: |
+        {% if not query.matched %}
+          Ningún dispositivo
+        {% else: %}
+          {% set match = query.matched | map(attribute="name") | sort | list %}
+          {% if match | length > 4 %}
+            {{ match[:3] | join(", ") }} y otros {{ (match | length - 3) }} dispositivos más
+          {% else %}
+            {%- for name in match -%}
+              {% if not loop.first and not loop.last %}, {% elif loop.last and not loop.first %} y {% endif -%}
+              {{ name }}
+            {%- endfor -%}
+          {% endif %}
+        {% endif %}
+
+      how_many: |
+        {{ query.matched | length }}
+
+      where: |
+        {% if state == "not_home" %}
+          {{ slots.name | capitalize }} está fuera
+        {% else %}
+          {{ slots.name | capitalize }} está en {{ state.state }}
+        {% endif %}

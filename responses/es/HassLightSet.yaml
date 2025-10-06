@@ -1,0 +1,6 @@
+language: es
+responses:
+  intents:
+    HassLightSet:
+      brightness: "Brillo establecido"
+      color: "Color establecido"

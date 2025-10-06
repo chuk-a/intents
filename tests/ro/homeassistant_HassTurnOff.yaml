@@ -1,11 +1,17 @@
 language: ro
 tests:
   - sentences:
-      - "stinge lumina din camera"
-      - "oprește lumina din camera"
-      - "stop lumina din camera"
-      - "închide lumina din camera"
+      - "opreste hota"
     intent:
-      name: "HassTurnOff"
+      name: HassTurnOff
       slots:
-        name: "light.bedroom_lamp"
+        name: "hota"
+    response: "Am oprit hota"
+
+  - sentences:
+      - "opreste televizorul"
+    intent:
+      name: HassTurnOff
+      slots:
+        name: "Televizorul"
+    response: "Am oprit televizorul"

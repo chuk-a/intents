@@ -1,10 +1,11 @@
 language: cs
 tests:
-- sentences:
-    - "zapni stropní ventilátor"
-    - "zapnout stropní ventilátor"
-    - "stropní ventilátor zapnout"
-  intent:
-    name: HassTurnOn
-    slots: 
-      name: "fan.ceiling"
+  - sentences:
+      - "zapni kuchyňský vypínač"
+      - "zapnout kuchyňský vypínač"
+      - "kuchyňský vypínač zapni"
+      - "kuchyňský vypínač zapnout"
+    intent:
+      name: HassTurnOn
+      slots:
+        name: Kuchyňský vypínač

@@ -1,9 +1,10 @@
 language: uk
 tests:
-- sentences:
-    - "Вимкни кондиціонер"
-    - "Виключи, будь ласка, кондиціонер"
-  intent:
-    name: "HassTurnOff"
-    slots:
-      name: "climate.ac"
+  - sentences:
+      - Вимкни кондиціонер
+      - Виключи будь ласка кондиціонер
+    intent:
+      name: HassTurnOff
+      slots:
+        name: Кондиціонер
+    response: кондиціонер вимкнено

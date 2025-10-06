@@ -1,0 +1,6 @@
+language: nl
+responses:
+  intents:
+    HassLightSet:
+      brightness: "Helderheid aangepast"
+      color: "Kleur aangepast"

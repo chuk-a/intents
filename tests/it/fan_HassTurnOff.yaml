@@ -1,4 +1,4 @@
-language: "it"
+language: it
 tests:
   - sentences:
       - "spegni il ventilatore in soggiorno"
@@ -9,8 +9,8 @@ tests:
       - "spegni le ventole in soggiorno"
       - "spegni tutte le ventole in soggiorno"
     intent:
-      name: "HassTurnOff"
+      name: HassTurnOff
       slots:
-        area: "soggiorno"
-        domain: "fan"
-        name: "all"
+        area: Soggiorno
+        domain: fan
+        name: all

@@ -1,4 +1,5 @@
 """Test language intents."""
+
 from __future__ import annotations
 
 import dataclasses
@@ -6,9 +7,15 @@ import sys
 from pathlib import Path
 from typing import Any, Iterable
 
-from hassil import Intents
-from hassil.expression import Expression, ListReference, RuleReference, Sequence
-from hassil.intents import TextSlotList
+from hassil import (
+    Expression,
+    Group,
+    Intents,
+    ListReference,
+    RuleReference,
+    Sentence,
+    TextSlotList,
+)
 
 from . import SENTENCES_DIR
 
@@ -47,7 +54,10 @@ def do_test_language_sentences(
     language_sentences_common: Intents,
 ) -> None:
     """Ensure all language sentences contain valid slots, lists, rules, etc."""
-    file_domain, file_intent = file_name.split(".")[0].split("_", 1)
+    if file_name not in language_sentences_yaml:
+        return
+
+    file_domain, file_intent = Path(file_name).stem.rsplit("_", maxsplit=1)
 
     parsed_sentences_without_common = Intents.from_dict(
         language_sentences_yaml[file_name]
@@ -59,8 +69,9 @@ def do_test_language_sentences(
     )
 
     # Add placeholder slots that HA will generate
-    language_sentences.slot_lists["area"] = TextSlotList(values=[])
-    language_sentences.slot_lists["name"] = TextSlotList(values=[])
+    language_sentences.slot_lists["area"] = TextSlotList(name="area", values=[])
+    language_sentences.slot_lists["name"] = TextSlotList(name="name", values=[])
+    language_sentences.slot_lists["floor"] = TextSlotList(name="floor", values=[])
 
     # Lint sentences
     for intent_name, intent in language_sentences.intents.items():
@@ -69,35 +80,43 @@ def do_test_language_sentences(
         ), f"File {file_name} should only contain sentences for intent {file_intent}"
 
         intent_schema = intent_schemas[intent_name]
-        slot_schema = intent_schema["slots"]
-        slot_combinations = intent_schema.get("slot_combinations")
+        slot_schema = intent_schema.get("slots", {})
 
         for data in intent.data:
             if not data.sentences:
                 continue
 
-            # Domain specific files (ie light_HassTurnOn.yaml) should only match
-            # sentences for the light domain.
-            if intent_schemas[file_intent]["domain"] == file_domain:
-                assert (
-                    "domain" not in data.slots
-                ), f"File {file_name} should only have sentences without a domain slot"
-            else:
-                assert (
-                    data.slots.get("domain") == file_domain
-                ), f"File {file_name} should only have sentences with a domain slot set to {file_domain}"
+            expansion_rules = language_sentences.expansion_rules | data.expansion_rules
+
+            if file_domain != "homeassistant":
+                # Domain specific files (ie light_HassTurnOn.yaml) should only match
+                # sentences for the light domain.
+                if intent_schemas[file_intent]["domain"] == file_domain:
+                    assert (
+                        "domain" not in data.slots
+                    ), f"File {file_name} should only have sentences without a domain slot"
+                else:
+                    assert (data.slots.get("domain") == file_domain) or (
+                        data.requires_context.get("domain") == file_domain
+                    ), f"File {file_name} should only have sentences with a domain slot or context key set to {file_domain}"
 
             for sentence in data.sentences:
                 found_slots: set[str] = set()
-                for expression in _flatten(sentence):
+                for expression in _flatten(sentence.expression):
                     _verify(
                         expression,
                         language_sentences,
                         intent_name,
-                        slot_schema,
+                        slot_schema=slot_schema,
                         visited_rules=set(),
                         found_slots=found_slots,
+                        expansion_rules=expansion_rules,
                     )
+
+                # Add inferred slots
+                found_slots.update(data.slots)
+                if data.requires_context:
+                    found_slots.update(data.requires_context)
 
                 # Check required slots
                 for slot_name, slot_info in slot_schema.items():
@@ -106,26 +125,16 @@ def do_test_language_sentences(
                             slot_name in found_slots
                         ), f"Missing required slot: '{slot_name}', intent='{intent_name}', sentence='{sentence.text}'"
 
-                if slot_combinations:
-                    # Verify one of the combinations is matched
-                    combo_matched = False
-                    for combo_slots in slot_combinations.values():
-                        if set(combo_slots) == found_slots:
-                            combo_matched = True
-                            break
-
-                    assert (
-                        combo_matched
-                    ), f"Slot combination not matched: intent='{intent_name}', slots={found_slots}, sentence='{sentence.text}'"
-
 
 def _verify(
     expression: Expression,
     intents: Intents,
     intent_name: str,
+    *,
     slot_schema: dict[str, Any],
     visited_rules: set[str],
     found_slots: set[str],
+    expansion_rules: dict[str, Sentence],
 ) -> None:
     if isinstance(expression, ListReference):
         list_ref: ListReference = expression
@@ -145,60 +154,64 @@ def _verify(
     elif isinstance(expression, RuleReference):
         rule_ref: RuleReference = expression
         assert (
-            rule_ref.rule_name in intents.expansion_rules
-        ), f"Missing expansion rule: <{rule_ref.rule_name}>. Are you missing an 'expansion_rules' entry in _common.yaml?"
+            rule_ref.rule_name in expansion_rules
+        ), f"Missing expansion rule: <{rule_ref.rule_name}>. Are you missing an 'expansion_rules' entry in _common.yaml or in the intent data?"
 
         # Check for recursive rules (not supported)
         assert (
             rule_ref.rule_name not in visited_rules
         ), f"Recursive rule detected: <{rule_ref.rule_name}>"
 
-        visited_rules.add(rule_ref.rule_name)
-
         # Verify rule body
-        for body_expression in _flatten(intents.expansion_rules[rule_ref.rule_name]):
+        for body_expression in _flatten(expansion_rules[rule_ref.rule_name].expression):
+            visited_rules.add(rule_ref.rule_name)
             _verify(
                 body_expression,
                 intents,
                 intent_name,
-                slot_schema,
-                visited_rules,
-                found_slots,
+                slot_schema=slot_schema,
+                visited_rules=visited_rules,
+                found_slots=found_slots,
+                expansion_rules=expansion_rules,
             )
+            visited_rules.remove(rule_ref.rule_name)
 
 
 def _flatten(expression: Expression) -> Iterable[Expression]:
-    if isinstance(expression, Sequence):
-        seq: Sequence = expression
-        for item in seq.items:
+    if isinstance(expression, Group):
+        grp: Group = expression
+        for item in grp.items:
             yield from _flatten(item)
     else:
         yield expression
 
 
-def gen_test(test_file: Path) -> None:
+def gen_test(test_file: str) -> None:
     def test_func(
         intent_schemas: dict[str, Any],
         language_sentences_yaml: dict[str, Any],
         language_sentences_common: Intents,
     ) -> None:
         do_test_language_sentences(
-            test_file.name,
+            test_file,
             intent_schemas,
             language_sentences_yaml,
             language_sentences_common,
         )
 
-    test_func.__name__ = f"test_{test_file.stem}"
+    test_func.__name__ = f"test_{test_file.rsplit('.', 1)[0]}"
     setattr(sys.modules[__name__], test_func.__name__, test_func)
 
 
 def gen_tests() -> None:
-    lang_dir = SENTENCES_DIR / "en"
+    names = {
+        test_file.name
+        for test_file in SENTENCES_DIR.glob("*/*.yaml")
+        if test_file.name != "_common.yaml"
+    }
 
-    for test_file in lang_dir.glob("*.yaml"):
-        if test_file.name != "_common.yaml":
-            gen_test(test_file)
+    for name in sorted(names):
+        gen_test(name)
 
 
 gen_tests()

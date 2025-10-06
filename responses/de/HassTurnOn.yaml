@@ -1,0 +1,15 @@
+language: de
+responses:
+  intents:
+    HassTurnOn:
+      default: "{{ slots.name }} eingeschaltet"
+      light: "Licht eingeschaltet"
+      light_all: "Alle Lichter eingeschaltet"
+      fan: "Ventilator eingeschaltet"
+      fan_all: "Alle Ventilatoren eingeschaltet"
+      cover: "geöffnet"
+      open_all: "alle geöffnet"
+      lock: "abgeschlossen"
+      scene: "{{ slots.name }} aktiviert"
+      script: "{{ slots.name }} gestartet"
+      valve: "geöffnet"

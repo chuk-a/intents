@@ -1,15 +1,23 @@
 language: lt
 tests:
   - sentences:
-      - "Išjunk lubų ventiliatorių"
+      - Išjunk lubų ventiliatorių
     intent:
       name: HassTurnOff
       slots:
-        name: "fan.ceiling"
+        name:
+          - lubų ventiliatorių
+          - lubų ventiliatorius
   - sentences:
-      - "išjunk svetainės lubų ventiliatorių"
+      - išjunk svetainės lubų ventiliatorių
+      - išjunk lubų ventiliatorių svetainės
     intent:
       name: HassTurnOff
       slots:
-        name: "fan.ceiling"
-        area: living_room
+        name:
+          - lubų ventiliatorių
+          - lubų ventiliatorius
+        area:
+          - Svetainė
+          - Svetainės
+          - Svetainėje

@@ -1,0 +1,8 @@
+language: "it"
+responses:
+  intents:
+    HassLightSet:
+      brightness: "Ho impostato la luminosità di {{ slots.name }} al {{ slots.brightness }}"
+      brightness_area: "Ho impostato la luminosità in {{ slots.area }} al {{ slots.brightness }}"
+      color: "Ho impostato il colore di {{ slots.name }} su {{ slots.color }}"
+      color_area: "Ho impostato il colore in {{ slots.area }} su {{ slots.color }}"

@@ -1,0 +1,5 @@
+language: sw
+responses:
+  intents:
+    HassTurnOn:
+      default: "Uliwasha {{ slots.name }}"

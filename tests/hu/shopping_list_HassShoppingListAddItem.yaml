@@ -1,0 +1,10 @@
+language: hu
+tests:
+  - sentences:
+      - Tedd az Alma elemet a bevásárlólistához
+      - Rakd az Alma tételt a bevásárlólistához
+    intent:
+      name: HassShoppingListAddItem
+      slots:
+        item: "Alma"
+    response: Az Alma hozzáadva a listához

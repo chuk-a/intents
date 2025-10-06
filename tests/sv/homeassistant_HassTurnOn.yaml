@@ -1,9 +1,11 @@
 language: sv
 tests:
   - sentences:
-      - "sätt på takfläkten"
-      - "sätt på takfläkten tack"
+      - starta takfläkten
+      - sätt på takfläkten
+      - sätt på takfläkten tack
     intent:
       name: HassTurnOn
       slots:
-        name: "fan.ceiling_fan"
+        name: Takfläkten
+    response: "Slog på fläkten"

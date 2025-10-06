@@ -2,6 +2,14 @@ language: ca
 intents:
   HassLightSet:
     data:
-    - sentences:
-      - "<configura> la llum (<area> | <name>) al <lluentor>"
-      - "<engega> la llum (<area> | <name>) al <lluentor>"
+      - sentences:
+          - <configura> <llums> (<area> | <name>) (al|<al_stt_typo>) <lluentor>
+          - <engega> <llums> (<area> | <name>) (al|<al_stt_typo>) <lluentor>
+        response: brightness_area
+
+      - sentences:
+          - (<configura>|<engega>) <llums> (al|<al_stt_typo>) <lluentor>
+        response: brightness_area
+        requires_context:
+          area:
+            slot: true

@@ -1,0 +1,10 @@
+language: lb
+intents:
+  HassTurnOff:
+    data:
+      - sentences:
+          - schalt <name> aus
+          - schalt <name> <area> aus
+          - stopp <name>
+          - <maach> <area> <name> <zou>
+          - <maach> <name> <area> <zou>

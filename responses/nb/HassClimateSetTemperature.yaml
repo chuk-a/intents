@@ -1,0 +1,5 @@
+language: nb
+responses:
+  intents:
+    HassClimateSetTemperature:
+      default: Temperaturen ble endret

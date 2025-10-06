@@ -1,0 +1,77 @@
+language: "fi"
+intents:
+  HassTurnOff:
+    data:
+      - sentences:
+          # Singular light, with unprefixed and unconjugated area.
+          # Grammatically incorrect, but people might be used to this limitation.
+
+          - "<kytke> (<huone>;<valo>;<päältä>)"
+          - "sammuta (<huone>;<valo>)"
+
+          # Singular light, with prefixed and unconjugated area.
+          # Grammatically correct, but cumbersome to say or know about the prefix.
+          - "<kytke> (<alue_taivutus> <huone>;<päältä>;<valo>)"
+          - "sammuta (<alue_taivutus> <huone>;<valo>)"
+
+          # Grammatically correct, conjugated and natural language
+          - "<kytke> (<alue_pääte>;<päältä>;<valo>)"
+          - "sammuta (<alue_pääte>;<valo>)"
+
+        slots:
+          domain: "light"
+        response: lights_area_singular
+      - sentences:
+          # Plural lights, with unprefixed and unconjugated area.
+          # Grammatically incorrect, but people might be used to this limitation.
+
+          - "<kytke> ([kaikki];<huone>;<valot>;<päältä>)"
+          - "sammuta ([kaikki];<huone>;<valot>)"
+
+          # Same as above, but singular light turned plural with extra word
+
+          - "<kytke> (jokainen;<huone>;<valo>;<päältä>)"
+          - "sammuta (jokainen;<huone>;<valo>)"
+
+          # Plural lights, with prefixed and unconjugated area.
+          # Grammatically correct, but cumbersome to say or know about the prefix.
+
+          - "<kytke> ([kaikki];<alue_taivutus> <huone>;<valot>;<päältä>)"
+          - "sammuta ([kaikki];<alue_taivutus> <huone>;<valot>)"
+
+          # Same as above, but singular light turned plural with extra word
+
+          - "<kytke> (jokainen;<alue_taivutus> <huone>;<valo>;<päältä>)"
+          - "sammuta (jokainen;<alue_taivutus> <huone>;<valo>)"
+
+          # Grammatically correct, conjugated and natural language
+          - "<kytke> ([kaikki];<alue_pääte>;<valot>;<päältä>)"
+          - "<kytke> (jokainen;<alue_pääte>;<valo>;<päältä>)"
+          - "sammuta (jokainen;<alue_pääte>;<valo>)"
+          - "sammuta ([kaikki];<alue_pääte>;<valot>)"
+
+        slots:
+          domain: "light"
+        response: lights_area_plural
+      - sentences:
+          # General "darken room" where amount of lights is unknown
+          - "pimennä <huone>"
+          # Uncountable lights, with unprefixed and unconjugated area.
+          # Grammatically incorrect, but people might be used to this limitation.
+
+          - "<kytke> (<päältä>;(<valaistus>|<valaistukset>);<huone>)"
+          - "sammuta ((<valaistus>|<valaistukset>);<huone>)"
+
+          # Uncountable lights, with prefixed and unconjugated area.
+          # Grammatically correct, but cumbersome to say or know about the prefix.
+
+          - "<kytke> (<päältä>;(<valaistus>|<valaistukset>);<alue_taivutus> <huone>)"
+          - "sammuta ((<valaistus>|<valaistukset>);<alue_taivutus> <huone>)"
+
+          # Grammatically correct, conjugated and natural language
+          - "<kytke> (<päältä>;(<valaistus>|<valaistukset>);<alue_pääte>)"
+          - "sammuta ((<valaistus>|<valaistukset>);<alue_pääte>)"
+
+        slots:
+          domain: "light"
+        response: lights_area_uncountable

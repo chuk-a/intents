@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 
 import yaml
-from hassil.util import merge_dict
+from hassil import merge_dict
 
 from .const import INTENTS_FILE, LANGUAGES, RESPONSE_DIR, SENTENCE_DIR
 from .util import get_base_arg_parser
@@ -25,20 +25,20 @@ def run() -> int:
     intent_info = yaml.safe_load(INTENTS_FILE.read_text())
     intent_by_domain: dict[str, list] = {}
     for intent, info in intent_info.items():
+        if not info.get("supported", True):
+            continue
         intent_by_domain.setdefault(info["domain"], []).append(intent)
-    for intents in intent_by_domain.values():
-        intents.sort()
 
     for domain in intent_by_domain:
         (target / domain).mkdir(parents=True, exist_ok=True)
 
     for language in LANGUAGES:
         merged_sentences: dict = {}
-        for sentence_file in (SENTENCE_DIR / language).iterdir():
+        for sentence_file in (SENTENCE_DIR / language).glob("*.yaml"):
             merge_dict(merged_sentences, yaml.safe_load(sentence_file.read_text()))
 
         merged_responses: dict = {}
-        for response_file in (RESPONSE_DIR / language).iterdir():
+        for response_file in (RESPONSE_DIR / language).glob("*.yaml"):
             merge_dict(merged_responses, yaml.safe_load(response_file.read_text()))
 
         for domain, supported_intents in intent_by_domain.items():
@@ -61,7 +61,7 @@ def run() -> int:
             domain_responses = {
                 intent: info
                 for intent, info in merged_responses["responses"]["intents"].items()
-                if intent in supported_intents and len(info["success"]) > 0
+                if intent in supported_intents
             }
 
             if not domain_intents and not domain_responses:

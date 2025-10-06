@@ -1,0 +1,15 @@
+language: fi
+responses:
+  intents:
+    HassTurnOn:
+      default: "Kytkettiin päälle {{ slots.name }}"
+      lights_area_singular: "Laitettiin valo päälle"
+      lights_area_plural: "Laitettiin valot päälle"
+      lights_area_uncountable: "Valaistiin"
+      fans_area_singular: "Tuuletin on nyt päällä"
+      fans_area_plural: "Tuulettimet ovat nyt päällä"
+      cover: "Avattiin"
+      cover_device_class: "Avattiin {{ slots.device_class }}"
+      lock: "Lukittu"
+      valve: "Avattiin"
+      script: "Käynnistettiin {{ slots.name }}"

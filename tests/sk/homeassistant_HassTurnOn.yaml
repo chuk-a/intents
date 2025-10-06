@@ -1,9 +1,28 @@
-language: "sk"
+language: sk
 tests:
   - sentences:
-      - "zapni stropný ventilátor"
+      - "zapni kuchynský vypínač"
+      - "zapnúť kuchynský vypínač"
+      - "kuchynský vypínač zapni"
+      - "kuchynský vypínač zapnúť"
     intent:
-      name: "HassTurnOn"
+      name: HassTurnOn
       slots:
-        name: "fan.ceiling"
+        name: kuchynský vypínač
+    response: "Zapínam kuchynský vypínač"
 
+  - sentences:
+      - "kuchynský vypínač v kuchyni zapnúť"
+      - "spálňový vypínač v spálni zapni"
+    intent:
+      name: HassTurnOn
+      slots:
+        name:
+          - kuchynský vypínač
+          - spálňový vypínač
+        area:
+          - kuchyni
+          - spálni
+    response:
+      - "Zapínam kuchynský vypínač"
+      - "Zapínam spálňový vypínač"

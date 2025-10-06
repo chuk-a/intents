@@ -1,21 +1,27 @@
-language: "es"
+language: es
 tests:
   - sentences:
-      - "apaga la lámpara del dormitorio"
-      - "apagar lámpara del dormitorio"
-      - "desconecta lámpara en dormitorio"
-      - "desconectar lámpara de dormitorio"
-      - "desactiva la lámpara del dormitorio"
-      - "desactivar lámpara en el dormitorio"
+      - apaga la lámpara de la mesilla
+      - apague la lámpara de la mesilla
+      - apagar lámpara de la mesilla
+      - desconecta lámpara de la mesilla
+      - desconecte la lámpara de la mesilla
+      - desconectar lámpara de la mesilla
+      - desactiva la lámpara de la mesilla
+      - desactive lámpara de la mesilla
+      - desactivar lámpara de la mesilla
     intent:
-      name: "HassTurnOff"
+      name: HassTurnOff
       slots:
-        name: "light.lampara_dormitorio"
-        area: dormitorio
+        name: Lámpara de la mesilla
+    response: lámpara de la mesilla se ha apagado
+
   - sentences:
-      - "desactiva el interruptor de la cocina"
+      - apagar luces de la cocina
+      - desconecta todas las luces de la cocina
     intent:
-      name: "HassTurnOff"
+      name: HassTurnOff
       slots:
-        name: "switch.cocina"
-        area: "cocina"
+        area: Cocina
+        domain: light
+    response: "Luces apagadas"

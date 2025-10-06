@@ -1,9 +1,19 @@
-language: "ru"
+language: ru
 tests:
   - sentences:
-      - "выключи прикроватную лампу"
-      - "отключи прикроватную лампу"
+      - "выключи ночную лампу"
+      - "отключи ночную лампу"
     intent:
-      name: "HassTurnOff"
+      name: HassTurnOff
       slots:
-        name: "light.bedroom_lamp"
+        name:
+          - "Ночную лампу"
+    response: "Лампa выключена"
+  - sentences:
+      - "отключи кухонный выключатель"
+    intent:
+      name: HassTurnOff
+      slots:
+        name:
+          - "Кухонный выключатель"
+    response: "Выключатель выключен"

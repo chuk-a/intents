@@ -2,47 +2,51 @@
 
 This repository contains training data for Home Assistant's local voice control.
 
- - [Progress per language x intent](https://home-assistant.github.io/intents/)
- - [How to contribute](https://developers.home-assistant.io/docs/voice/intent-recognition/contributing/)
- - [Language leaders](https://developers.home-assistant.io/docs/voice/language-leaders/)
- - [Supported intents](intents.yaml)
- - [Supported languages](languages.yaml)
+- [Progress per language and intent](https://ohf-voice.github.io/intents/)
+- [How to contribute](https://developers.home-assistant.io/docs/voice/intent-recognition/contributing/)
+- [Language leaders](https://developers.home-assistant.io/docs/voice/language-leaders/)
+- [Supported intents](https://developers.home-assistant.io/docs/intent_builtin/)
+- [Supported languages](https://developers.home-assistant.io/docs/voice/intent-recognition/supported-languages/)
 
 Repository layout:
 
+- [`languages.yaml`](languages.yaml)
+  - Supported languages and their language leader.
+- [`intents.yaml`](intents.yaml)
+  - Supported intents
 - `sentences/<language>`
-  - Intent matching sentences in YAML files for `<language>` with the name `<domain>_<intent>.yaml`
+  - Intent matching sentences in YAML files for `<language>` with the name `<domain>_<intent>.yaml`.
   - [File format](https://developers.home-assistant.io/docs/voice/intent-recognition/template-sentence-syntax/)
 - `responses/<language>`
-  - YAML files for `<language>` with responses for intents
+  - YAML files for `<language>` with responses for intents.
   - [File format](https://developers.home-assistant.io/docs/voice/intent-recognition/test-syntax/)
 - `tests/<language>`
-  - YAML files for `<language>` with test sentences and corresponding intents
-  - [File format](tests/README.md#file-format)
+  - YAML files for `<language>` with test sentences and corresponding intents.
+  - [File format](https://developers.home-assistant.io/docs/voice/intent-recognition/test-syntax/)
 
 See the [documentation](docs/README.md) for more information.
 
 # Development
 
-Checkout the repository and get a development environment with `script/setup`. This will create a new virtual environment in the `venv` directory of the repository, and install all necessary requirements.
-
-Before developing, always activate your virtual environment with `source venv/bin/activate`.
+The easiest way to start contributing is by using [devcontainers](https://containers.dev/).
+The repository is configured for devcontainer support.
+Please, check how you can use devcontainers with your favourite IDE.
 
 ## Run tests
 
 Validate that the data is correctly formatted:
 
-```
+```sh
 python3 -m script.intentfest validate --language nl
 ```
 
 Run the tests. This will parse the sentences and verifies them with the test sentences.
 
-```
+```sh
 pytest tests --language nl -k fan_HassTurnOn
 ```
 
-Leave off `--language` to test all languages. Leave off `-k` to test all files.
+Leave off `--language` to test all languages. Leave off `-k` to test all files. Add `-n auto` to use test parallelization.
 
 ## Test parsing sentences
 
@@ -54,7 +58,7 @@ python3 -m script.intentfest parse --language en --sentence 'turn on the lights 
 
 This will print a line of JSON for each `--sentence`:
 
-```
+```json
 {
   "text": "turn on the lights in the kitchen",
   "match": true,
@@ -113,9 +117,35 @@ You can add lists, ranges, and expansion rules as well:
 python3 -m script.intentfest sample_template 'set color to <color> and brightness to {brightness}' --values color red green --range brightness 1 2 --rule color '[the] {color}'
 ```
 
+## Determine sentence variations/permutations
+
+Using optional segments in sentence definitions can result in a wide range of sentence variations, sometimes growing unexpectedly large. This can impact performance, especially on lower-powered devices.
+
+To check the size of a language configuration, use the following command. It helps identify overly broad definitions, refine sentence structures, and ensure more natural, efficient interactions with Assist - without unnecessary complexity that could slow down processing.
+
+Summary per intent per language:
+```sh
+python3 -m script.intentfest count_sentences --language nl --summary
+```
+
+Details on permutations per intent per language:
+```sh
+python3 -m script.intentfest count_sentences --language nl
+```
+
+## Generate LLM prompt to help with translations
+
+If you start to translate a new intent, you can generate a prompt to paste into ChatGPT or another LLM to help with translations
+
+Example to generate a prompt to translate the `HassListAddItem` intent to Italian:
+
+```sh
+python3 -m script.intentfest llm_template it HassListAddItem
+```
+
 ## Add new language
 
-```
+```sh
 python3 -m script.intentfest add_language <language code> <language name>
 ```
 

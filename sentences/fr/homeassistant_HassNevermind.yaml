@@ -1,0 +1,12 @@
+language: fr
+intents:
+  HassNevermind:
+    data:
+      - sentences:
+          - "oublie[s]"
+          - "annule[r]"
+          - "[non] rien [du tout]"
+          - "chut"
+          - "tais toi"
+          - "tais-toi"
+          - "silence"

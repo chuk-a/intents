@@ -1,16 +1,321 @@
 language: de
+settings:
+  filter_with_regex: false
 responses:
   errors:
     no_intent: "Entschuldigung, das habe ich nicht verstanden"
-    no_area: "Kein Bereich mit dem Namen {{ area }} vorhanden"
-    no_domain: "{{ domain }} ist nicht im Bereich {{ area }} vorhanden"
-    no_device_class: "{{ device_class }} ist nicht im Bereich {{ area }} vorhanden"
-    no_entity: "{{ entity }} existiert nicht"
     handle_error: "Es ist ein unerwarteter Fehler aufgetreten"
+
+    # Errors for when user is not logged in
+    no_area: "Kein Bereich mit dem Namen {{ area }} vorhanden"
+    no_floor: "Keine Etage mit dem Namen {{ floor }} vorhanden"
+    no_domain: |
+      {% set translations = {
+        "alarm_control_panel": "keine Alarmzentrale",
+        "automation": "keine Automatisierung",
+        "button": "keine Taste",
+        "camera": "keine Kamera",
+        "climate": "kein Thermostat",
+        "fan": "kein Ventilator",
+        "humidifier": "kein Luftbefeuchter",
+        "input_boolean": "kein Schalter-Helfer",
+        "input_button": "kein Tasten-Helfer",
+        "lawn_mower": "kein Rasenmäher",
+        "light": "keine Leuchte",
+        "lock": "kein Schloss",
+        "media_player": "kein Media-Player",
+        "remote": "keine Fernbedienung",
+        "scene": "keine Szene",
+        "script": "kein Skript",
+        "siren": "keine Sirene",
+        "switch": "kein Schalter",
+        "vacuum": "kein Staubsauger",
+        "valve": "kein Ventil",
+        "water_heater": "kein Warmwasserbereiter",
+        "weather": "kein Wetter"
+        } %}
+      {% if domain in translations -%}
+        Es wurde {{ translations[domain] }} gefunden
+      {%- else -%}
+        Es wurde keine Übereinstimmung gefunden
+      {%- endif %}
+    no_domain_in_area: |
+      {% set translations = {
+        "alarm_control_panel": "keine Alarmzentrale",
+        "automation": "keine Automatisierung",
+        "button": "keine Taste",
+        "camera": "keine Kamera",
+        "climate": "kein Thermostat",
+        "fan": "kein Ventilator",
+        "humidifier": "kein Luftbefeuchter",
+        "input_boolean": "kein Schalter-Helfer",
+        "input_button": "kein Tasten-Helfer",
+        "lawn_mower": "kein Rasenmäher",
+        "light": "keine Leuchte",
+        "lock": "kein Schloss",
+        "media_player": "kein Media-Player",
+        "remote": "keine Fernbedienung",
+        "scene": "keine Szene",
+        "script": "kein Skript",
+        "siren": "keine Sirene",
+        "switch": "kein Schalter",
+        "vacuum": "kein Staubsauger",
+        "valve": "kein Ventil",
+        "water_heater": "kein Warmwasserbereiter",
+        "weather": "kein Wetter"
+        } %}
+      {% if domain in translations -%}
+        Im Bereich {{ area }} wurde {{ translations[domain] }} gefunden
+      {%- else -%}
+        Im Bereich {{ area }} wurde keine Übereinstimmung gefunden
+      {%- endif %}
+    no_domain_in_floor: |
+      {% set translations = {
+        "alarm_control_panel": "keine Alarmzentrale",
+        "automation": "keine Automatisierung",
+        "button": "keine Taste",
+        "camera": "keine Kamera",
+        "climate": "kein Thermostat",
+        "fan": "kein Ventilator",
+        "humidifier": "kein Luftbefeuchter",
+        "input_boolean": "kein Schalter-Helfer",
+        "input_button": "kein Tasten-Helfer",
+        "lawn_mower": "kein Rasenmäher",
+        "light": "keine Leuchte",
+        "lock": "kein Schloss",
+        "media_player": "kein Media-Player",
+        "remote": "keine Fernbedienung",
+        "scene": "keine Szene",
+        "script": "kein Skript",
+        "siren": "keine Sirene",
+        "switch": "kein Schalter",
+        "vacuum": "kein Staubsauger",
+        "valve": "kein Ventil",
+        "water_heater": "kein Warmwasserbereiter",
+        "weather": "kein Wetter"
+        } %}
+      {% if domain in translations -%}
+        In der Etage {{ floor }} wurde {{ translations[domain] }} gefunden
+      {%- else -%}
+        In der Etage {{ floor }} wurde keine Übereinstimmung gefunden
+      {%- endif %}
+    no_device_class: |
+      {% set translations = {
+        "awning": "keine Markise",
+        "blind": "keine Jalousie",
+        "curtain": "kein Vorhang",
+        "door": "keine Tür",
+        "garage": "kein Garagentor",
+        "gate": "kein Tor",
+        "shade": "kein Schirm",
+        "shutter": "kein Rollladen",
+        "window": "kein Fenster"
+        } %}
+      {% if device_class in translations -%}
+        Es wurde {{ translations[device_class] }} gefunden
+      {%- else -%}
+        Es wurde keine Übereinstimmung gefunden
+      {%- endif %}
+    no_device_class_in_area: |
+      {% set translations = {
+        "awning": "keine Markise",
+        "blind": "keine Jalousie",
+        "curtain": "kein Vorhang",
+        "door": "keine Tür",
+        "garage": "kein Garagentor",
+        "gate": "kein Tor",
+        "shade": "kein Schirm",
+        "shutter": "kein Rollladen",
+        "window": "kein Fenster"
+        } %}
+      {% if device_class in translations -%}
+        Im Bereich {{ area }} wurde {{ translations[device_class] }} gefunden
+      {%- else -%}
+        Im Bereich {{ area }} wurde keine Übereinstimmung gefunden
+      {%- endif %}
+    no_device_class_in_floor: |
+      {% set translations = {
+        "awning": "keine Markise",
+        "blind": "keine Jalousie",
+        "curtain": "kein Vorhang",
+        "door": "keine Tür",
+        "garage": "kein Garagentor",
+        "gate": "kein Tor",
+        "shade": "kein Schirm",
+        "shutter": "kein Rollladen",
+        "window": "kein Fenster"
+        } %}
+      {% if device_class in translations -%}
+        In der Etage {{ floor }} wurde {{ translations[device_class] }} gefunden
+      {%- else -%}
+        In der Etage {{ floor }} wurde keine Übereinstimmung gefunden
+      {%- endif %}
+    no_entity: "{{ entity }} existiert nicht"
+    no_entity_in_area: "{{ entity }} ist im Bereich {{ area }} nicht vorhanden"
+    no_entity_in_floor: "{{ entity }} ist in der Etage {{ floor }} nicht vorhanden"
+    entity_wrong_state: "Kein Gerät hat den Status {{ state | lower }}"
+    feature_not_supported: "Kein Gerät unterstützt die benötigte Funktion"
+
+    # Errors for when user is logged in and we can give more information
+    no_entity_exposed: "{{ entity }} ist nicht freigegeben"
+    no_entity_in_area_exposed: "{{ entity }} ist im Bereich {{ area }} nicht freigegeben"
+    no_entity_in_floor_exposed: "{{ entity }} ist in der Etage {{ floor }} nicht freigegeben"
+    no_domain_exposed: |
+      {% set translations = {
+        "alarm_control_panel": "keine Alarmzentrale",
+        "automation": "keine Automatisierung",
+        "button": "keine Taste",
+        "camera": "keine Kamera",
+        "climate": "kein Thermostat",
+        "fan": "kein Ventilator",
+        "humidifier": "kein Luftbefeuchter",
+        "input_boolean": "kein Schalter-Helfer",
+        "input_button": "kein Tasten-Helfer",
+        "lawn_mower": "kein Rasenmäher",
+        "light": "keine Leuchte",
+        "lock": "kein Schloss",
+        "media_player": "kein Media-Player",
+        "remote": "keine Fernbedienung",
+        "scene": "keine Szene",
+        "script": "kein Skript",
+        "siren": "keine Sirene",
+        "switch": "kein Schalter",
+        "vacuum": "kein Staubsauger",
+        "valve": "kein Ventil",
+        "water_heater": "kein Warmwasserbereiter",
+        "weather": "kein Wetter"
+        } %}
+      {% if domain in translations -%}
+        Es ist {{ translations[domain] }} freigegeben
+      {%- else -%}
+        Es wurde keine Übereinstimmung gefunden
+      {%- endif %}
+    no_domain_in_area_exposed: |
+      {% set translations = {
+        "alarm_control_panel": "keine Alarmzentrale",
+        "automation": "keine Automatisierung",
+        "button": "keine Taste",
+        "camera": "keine Kamera",
+        "climate": "kein Thermostat",
+        "fan": "kein Ventilator",
+        "humidifier": "kein Luftbefeuchter",
+        "input_boolean": "kein Schalter-Helfer",
+        "input_button": "kein Tasten-Helfer",
+        "lawn_mower": "kein Rasenmäher",
+        "light": "keine Leuchte",
+        "lock": "kein Schloss",
+        "media_player": "kein Media-Player",
+        "remote": "keine Fernbedienung",
+        "scene": "keine Szene",
+        "script": "kein Skript",
+        "siren": "keine Sirene",
+        "switch": "kein Schalter",
+        "vacuum": "kein Staubsauger",
+        "valve": "kein Ventil",
+        "water_heater": "kein Warmwasserbereiter",
+        "weather": "kein Wetter"
+        } %}
+      {% if domain in translations -%}
+        Im Bereich {{ area }} ist {{ translations[domain] }} freigegeben
+      {%- else -%}
+        Im Bereich {{ area }} wurde keine Übereinstimmung gefunden
+      {%- endif %}
+    no_domain_in_floor_exposed: |
+      {% set translations = {
+        "alarm_control_panel": "keine Alarmzentrale",
+        "automation": "keine Automatisierung",
+        "button": "keine Taste",
+        "camera": "keine Kamera",
+        "climate": "kein Thermostat",
+        "fan": "kein Ventilator",
+        "humidifier": "kein Luftbefeuchter",
+        "input_boolean": "kein Schalter-Helfer",
+        "input_button": "kein Tasten-Helfer",
+        "lawn_mower": "kein Rasenmäher",
+        "light": "keine Leuchte",
+        "lock": "kein Schloss",
+        "media_player": "kein Media-Player",
+        "remote": "keine Fernbedienung",
+        "scene": "keine Szene",
+        "script": "kein Skript",
+        "siren": "keine Sirene",
+        "switch": "kein Schalter",
+        "vacuum": "kein Staubsauger",
+        "valve": "kein Ventil",
+        "water_heater": "kein Warmwasserbereiter",
+        "weather": "kein Wetter"
+        } %}
+      {% if domain in translations -%}
+        In der Etage {{ floor }} ist {{ translations[domain] }} freigegeben
+      {%- else -%}
+        In der Etage {{ floor }} wurde keine Übereinstimmung gefunden
+      {%- endif %}
+    no_device_class_exposed: |
+      {% set translations = {
+        "awning": "keine Markise",
+        "blind": "keine Jalousie",
+        "curtain": "kein Vorhang",
+        "door": "keine Tür",
+        "garage": "kein Garagentor",
+        "gate": "kein Tor",
+        "shade": "kein Schirm",
+        "shutter": "kein Rollladen",
+        "window": "kein Fenster"
+        } %}
+      {% if device_class in translations -%}
+        Es ist {{ translations[device_class] }} freigegeben
+      {%- else -%}
+        Es wurde keine Übereinstimmung gefunden
+      {%- endif %}
+    no_device_class_in_area_exposed: |
+      {% set translations = {
+        "awning": "keine Markise",
+        "blind": "keine Jalousie",
+        "curtain": "kein Vorhang",
+        "door": "keine Tür",
+        "garage": "kein Garagentor",
+        "gate": "kein Tor",
+        "shade": "kein Schirm",
+        "shutter": "kein Rollladen",
+        "window": "kein Fenster"
+        } %}
+      {% if device_class in translations -%}
+        Im Bereich {{ area }} ist {{ translations[device_class] }} freigegeben
+      {%- else -%}
+        Im Bereich {{ area }} wurde keine Übereinstimmung gefunden
+      {%- endif %}
+    no_device_class_in_floor_exposed: |
+      {% set translations = {
+        "awning": "keine Markise",
+        "blind": "keine Jalousie",
+        "curtain": "kein Vorhang",
+        "door": "keine Tür",
+        "garage": "kein Garagentor",
+        "gate": "kein Tor",
+        "shade": "kein Schirm",
+        "shutter": "kein Rollladen",
+        "window": "kein Fenster"
+        } %}
+      {% if device_class in translations -%}
+        In der Etage {{ floor }} ist {{ translations[device_class] }} freigegeben
+      {%- else -%}
+        In der Etage {{ floor }} wurde keine Übereinstimmung gefunden
+      {%- endif %}
+
+    # Used when multiple (exposed) devices have the same name
+    duplicate_entities: "Es wurden mehrere {{ entity }} gefunden"
+    duplicate_entities_in_area: "Im Bereich {{ area }} wurden mehrere {{ entity }} gefunden"
+    duplicate_entities_in_floor: "In der Etage {{ floor }} wurden mehrere {{ entity }} gefunden"
+
+    # Errors for timers
+    timer_not_found: "Diesen Timer konnte ich nicht finden"
+    multiple_timers_matched: "Es können nicht mehrere Timer gesteuert werden"
+    no_timer_support: "Timer werden auf diesem Gerät nicht unterstützt"
+
 lists:
   color:
     values:
-      - in: "weiß"
+      - in: "wei(ß|ss)"
         out: "white"
       - in: "schwarz"
         out: "black"
@@ -33,36 +338,388 @@ lists:
       type: "percentage"
       from: 0
       to: 100
+  brightness_level:
+    values:
+      - in: (max[imal[e]|imum]|höchste|volle|grö(ss|ß)te|hell[ste])
+        out: 100
+      - in: (min[imal[e]|imum]|niedrigste|kleinste|geringste)
+        out: 1
+  cover_states:
+    values:
+      - in: "(offen|auf|oben|geöffnet)"
+        out: "open"
+      - in: "(geschlossen|zu|unten)"
+        out: "closed"
+      - in: "([am ]öffnen|öffnet)"
+        out: "opening"
+      - in: "([am ]schlie(ß|ss)en|schlie(ß|ss)t)"
+        out: "closing"
+  cover_classes:
+    values:
+      - in: "(Markise[n]|Beschattung[en])"
+        out: awning
+      - in: "(Jalousie[n]|Rollo[s])"
+        out: blind
+      - in: "(Gardine[n]|Vorhang|Vorhänge)"
+        out: curtain
+      - in: Tür[e|en]
+        out: door
+      - in: "(Garagentür[e|en]|Garagentor[e])"
+        out: garage
+      - in: Tor[e]
+        out: gate
+      - in: Schirm[e]
+        out: shade
+      - in: "(Roll[l](a|ä)den)"
+        out: shutter
+      - in: Fenster
+        out: window
+  lock_domains:
+    values:
+      - in: "(Schloss|Schlösser|Tür[e|en]|Tor[e])"
+        out: "lock"
+  lock_states:
+    values:
+      - in: "(([ab|zu]ge|ver)(schlossen|sperrt)|verriegelt|nicht (ent(riegelt|sperrt)|aufge(sperrt|schlossen)))"
+        out: "locked"
+      - in: "(nicht (([ab|zu]ge|ver)(schlossen|sperrt)|verriegelt)|ent(riegelt|sperrt)|aufge(sperrt|schlossen))"
+        out: "unlocked"
+  on_off_domains:
+    values:
+      - in: (Lampe[n]|Licht[er]|Leuchte[n]|Beleuchtung[en])
+        out: light
+      - in: (Ventilator[en]|Lüfter)
+        out: fan
+      - in: Schalter
+        out: switch
+  on_off_states:
+    values:
+      - in: "((an|ein)[geschaltet]|auf)"
+        out: "on"
+      - in: "((aus|ab)[geschaltet]|zu)"
+        out: "off"
   temperature:
     range:
       type: "temperature"
       from: 0
       to: 100
-  temperature_unit:
+  # binary_sensor
+  bs_battery_states:
     values:
-      - "celsius"
-      - in: "c"
-        out: "Celsius"
-      - "fahrenheit"
-      - in: "f"
-        out: "Fahrenheit"
+      - in: "(niedrig|gering|schwach)"
+        out: "on"
+      - in: "normal"
+        out: "off"
+  bs_battery_charging_states:
+    values:
+      - in: "(lädt|[auf][ge]laden)[ auf]"
+        out: "on"
+      - in: "(lädt nicht|nicht[ auf][ge]laden|laden nicht)[ auf]"
+        out: "off"
+  bs_carbon_monoxide_states:
+    values:
+      - in: "<erkannt>"
+        out: "on"
+      - in: "(klar|rein|sauber|sicher)"
+        out: "off"
+  bs_cold_states:
+    values:
+      - in: "kalt"
+        out: "on"
+      - in: "normal"
+        out: "off"
+  bs_connectivity_states:
+    values:
+      - in: "verbunden"
+        out: "on"
+      - in: "getrennt"
+        out: "off"
+  bs_door_states:
+    values:
+      - in: "(auf|offen|geöffnet)"
+        out: "on"
+      - in: "(zu|geschlossen)"
+        out: "off"
+  bs_garage_door_states:
+    values:
+      - in: "(auf|offen|geöffnet|oben)"
+        out: "on"
+      - in: "(zu|geschlossen|unten)"
+        out: "off"
+  bs_window_states:
+    values:
+      - in: "(auf|offen|geöffnet|gekippt)"
+        out: "on"
+      - in: "(zu|geschlossen)"
+        out: "off"
+  bs_gas_states:
+    values:
+      - in: "<erkannt>"
+        out: "on"
+      - in: "(klar|rein|sauber|sicher)"
+        out: "off"
+  bs_heat_states:
+    values:
+      - in: "hei(ß|ss)"
+        out: "on"
+      - in: "normal"
+        out: "off"
+  bs_light_states:
+    values:
+      - in: "<erkannt>"
+        out: "on"
+      - in: "kein Licht"
+        out: "off"
+  bs_problem_states:
+    values:
+      - in: "<erkannt>"
+        out: "on"
+      - in: "(ok[ay]|normal)"
+        out: "off"
+  bs_safety_states:
+    values:
+      - in: "(unsicher|gefährlich)"
+        out: "on"
+      - in: "(sicher|ungefährlich)"
+        out: "off"
+
+  shopping_list_item:
+    wildcard: true
+
+  todo_list_item:
+    wildcard: true
+
+  zone:
+    wildcard: true
+
+  position:
+    range:
+      type: "percentage"
+      from: 0
+      to: 100
+  position_level:
+    values:
+      - in: (max[imal[e]|imum]|höchste)
+        out: 100
+      - in: (min[imal[e]|imum]|niedrigste)
+        out: 1
+
+  volume_level:
+    range:
+      type: "percentage"
+      from: 0
+      to: 100
+  volume_mapping:
+    values:
+      - in: (max[imal[e]|imum]|höchste|volle)
+        out: 100
+      - in: (min[imal[e]|imum]|niedrigste)
+        out: 1
+
+  timer_seconds:
+    range:
+      from: 1
+      to: 100
+  timer_minutes:
+    range:
+      from: 1
+      to: 100
+  timer_hours:
+    range:
+      from: 1
+      to: 100
+  timer_name:
+    wildcard: true
+  timer_command:
+    wildcard: true
+
+  message:
+    wildcard: true
+
+  search_query:
+    wildcard: true
+
+  media_class:
+    values:
+      - in: "([den ]künstler|[die ]künstlerin|[den ]sänger|[die ]sängerin|[die ]band)"
+        out: "artist"
+      - in: "[das ]album"
+        out: "album"
+      - in: "([den ]track|[die ]nummer|[das ]lied)"
+        out: "track"
+      - in: "([die ]wiedergabeliste|[die ]playlist)"
+        out: "playlist"
+      - in: "[den ]podcast"
+        out: "podcast"
+      - in: "([den ]film|[den ]streifen)"
+        out: "movie"
+      - in: "[die ][tv ](show|serie)"
+        out: "tv_show"
+
+  fan_speed:
+    range:
+      type: "percentage"
+      from: 0
+      to: 100
+
+  volume_step_up:
+    range:
+      type: percentage
+      from: 0
+      to: 100
+
+  volume_step_down:
+    range:
+      type: percentage
+      from: 0
+      to: 100
+      multiplier: -1
+
 expansion_rules:
-  name: "[(der | den | die | das)] {name}"
-  area: "(in (der | dem) | im) {area}"
-  an_ein: "(an | ein)"
-  ab_aus: "(ab | aus)"
-  schliessen: "(schließ | schließe)"
-  machen: "(mach | mache)"
-  setzen: "(setze | stelle | ändere)"
-  abdeckung: "(das Rollo | die Rollos | die Abdeckung | die Abdeckungen | den Rollladen | die Rollläden | die (Jalousie | Jalousien))"
-  alle_abdeckungen: "alle (Rollos | Abdeckungen | Rollläden | Jalousien)"
-  garage: "(die Garage | die Garagen | das Garagentor | die Garagentore)"
-  alle_garagen: "(alle Garagen | alle Garagentore)"
-  tor: "(das Tor | die Tore)"
-  alle_tore: "alle (Tore | Garagentore)"
-  luefter: "(den Ventilator | die Ventilatoren | (den | die) Lüfter)"
-  alle_luefter: "alle (Ventilatoren | Lüfter)"
-  brightness: "{brightness} [Prozent]"
-  temperature: "{temperature} [Grad] [{temperature_unit}]"
+  # grammar
+  artikel_bestimmt: "(der|die|das|dem|den|des)"
+  artikel_unbestimmt: "(ein|eine|eines|einer|einem|einen)"
+  possessivpronom_mein: "(mein|meine|meines|meiner|meinem|meinen)"
+  possessivpronom_unser: "(unser|unsere|unseres|unserer|unserem|unseren)"
+  artikel: "<artikel_bestimmt>|<artikel_unbestimmt>"
+  preposition: "(in|an|bei|auf)"
+
+  # generic
+  name: "[<artikel_bestimmt> ]{name}"
+  area: "[(<preposition>|<artikel_bestimmt>) ]{area}|(<preposition> der|(an|in) die|in dem|im|am|<von_dem>) {area}|des {area}s"
+  floor: "[([(in|auf) ]<artikel_bestimmt>|im|<von_dem>) ]{floor}[[ ]Geschoss]"
+  hier: "(hier[ (im|in diesem) (Raum|Bereich)]|[(im|in diesem|diesen|den) ](Raum|Bereich))"
+  area_floor: "(<area>|<floor>)"
+  an: "(an|ein|auf)"
+  aus: "(aus|ab|zu)"
+  auf: "(auf|hoch|[he]rauf|nach oben)"
+  zu: "(zu|[he]runter|nach unten)"
+  von_dem: "(von[ dem]|vom)"
+  zu_dem: "(zu[ dem]|zum)"
+  alle: "((alle|sämtliche)|jede[r|s|n]|die (ganze|komplette)|die (ganzen|kompletten))"
+  alle_genitiv: "((alle|sämtliche)(r| der)|jede[r|s|n] der|die (ganzen|kompletten) der|der (ganzen|kompletten|sämtlichen)[ der])"
+  schliessen: "schlie(ß|ss)[e]"
+  schliessen_end_of_sentence: "(schlie(ß|ss)en|zumachen|zu machen)"
+  öffnen_end_of_sentence: "(öffnen|aufmachen|auf machen)"
+  schalten: "(schalt[e|et])"
+  machen: "(mach[e|t])"
+  fahren: "(fahr[e|t])"
+  setzen: "(<setze>|<stelle>)"
+  setze: "(setz[e]|änder[e]|veränder[e])"
+  stelle: "stell[e]"
+  erstelle: "erstell[e]"
+  setzen_end_of_sentence: "(setzen|stellen|einstellen|ändern|verändern)"
+  aktivieren: "aktivier[e|en]"
+  deaktivieren: "de<aktivieren>"
+  ausfuehren: "(start[e|en]|ausführen)"
+  irgend: "(irgend(ein[s]|eine[s]|einer|einem|einen|welche[s])[ der]|(einige|manche[s]|eins|eine[m])[ der]|(eines|einer)[ (der|des)]|irgendwo[ (der|die|das)]|einiges[ des]|ein|einen)"
+  etwas: "[irgend][et]was"
+  welche: "(welche[r|s|n][ der]|was für[ (ein[s]|eine[s])[ der]])"
+  wieviel: "(wie[ ]viel[e]|welche Anzahl[ (an|von)])"
+  ding: "((Ding|Gerät)[e|en]|Sensor[en]|Gegenstand|Gegenstände[n])"
+  erkannt: "(entdeckt|ausgelöst|erkannt|an)"
+  ist_wurde: "(ist|wurde)"
+  sind_wurden: "(sind|wurden)"
+  position: "{position}[ (Prozent|%)]"
+  volume: "{volume_level}[ (Prozent|%)]"
+  im_bereich: "[((in|auf)[ <artikel_bestimmt>]|im)] {zone:state}"
+  im_zuhause: "(zu Hause|[im ]Zuhause)"
+  temperature: "{temperature}[ ][°|Grad]"
+
+  # cover
+  abdeckung: "([(der|das|den) ]Rollo|[(der|den) ](Roll[l]aden|Vorhang)|[den ]Vorhängen|[(das|die|der|den) ]Raffstore[s]|[(der|die) ](Markise|Gardine|Beschattung|Jalousie|Abdeckung|Rollos|Vorhänge)|[(der|die|den) ](Markisen|Gardinen|Beschattungen|Jalousien|Abdeckungen|Roll[l]äden))"
+  alle_abdeckungen: "<alle> (Rollos|Abdeckungen|Roll[l](a|ä)den|Jalousien|Raffstores|Markisen|Vorhänge|Beschattungen|Gardine[n])"
+  fenster: "[(das|die) ]Fenster"
+  alle_fenster: "<alle> Fenster"
+  garage: "([die ]Garage[n]|[das ]Garagentor|[die ]Garagentore)"
+  alle_garagen: "<alle> (Garagen[tore])"
+  tor: "([das ]Tor|[die ]Tore)"
+  alle_tore: "<alle> Tore"
+
+  # fan
+  luefter: "([(der|den) ]Ventilator|[die ]Ventilatoren|[(der|die|den) ]Lüfter)"
+  luefter_genitiv: "(des Ventilator[s]|des Lüfter[s]|der Ventilatoren)"
+  alle_luefter: "<alle> (Ventilatoren|Lüfter)"
+  luefter_ueberall: "(überall [die ] (Lüfter|Ventilatoren)|[die ](Lüfter|Ventilatoren) überall)"
+
+  # light
+  brightness: "{brightness}[ (Prozent|%)]"
+  licht: "([das ]Licht|[die ]Lampe|[die ]Beleuchtung)"
+  licht_ohne_artikel: "(Licht|Lampe|Beleuchtung)"
+  lichtes: "([des ](Licht[s]|Lichtes)|[der ](Lampe|Beleuchtung))"
+  lichtes_mit_artikel: "(des (Licht[s]|Lichtes)|der (Lampe|Beleuchtung))"
+  lichter: "([(die|der) ]Lichter|[von den ]Lichtern|[(die|der|von den) ](Lampen|Leuchten|Beleuchtungen))"
+  alle_lichter: "((<alle>|<alle_genitiv>) ((Lichter|Lampen|Leuchten|Beleuchtungen)|Beleuchtung)|von allen (Lichtern|Lampen|Leuchten|Beleuchtungen))"
+  alle_lichter_ueberall: "(<alle_lichter>|überall (<licht>|<lichter>)|(<licht>|<lichter>) überall)"
+  leuchten_lassen: "([er]leuchten lassen|[ein]färben)"
+
+  # doors / locks
+  tuer: "[die ]Tür[e|en]"
+  schloss: "([das ]Schloss|[die ]Schlösser)"
+  sperren: "(sperr|schlie(ss|ß))[e|en]"
+  entsperren: "(entsperr[e|en]|aufschlie(ss|ß)[e|en]|öffne[n]|entrieg(el[n]|le))"
+  absperren: "((zu|ab)<sperren>|verrieg(el[n]|le))"
+
+  # scene / script
+  szene: "[die ]Szene"
+  skript: "[das ]Skript"
+
+  # batteries
+  batterie: "([der ]Batterie[n]|[des ]Akku[s])"
+  ladestand: "[der][ Lade][zu]Stand"
+
+  # co- / gas sensors
+  co: "Kohlen[stoff]monoxid"
+  co_sensor: "<co>[-]Sensor[en]"
+  gas_sensor: "Gas[-]Sensor[en]"
+
+  # Timers
+  timer_set: "(starte|setze|<stelle>|<erstelle>)"
+  timer_cancel: "(beende|stopp[e]|lösch[e])"
+  timer_cancel_end_of_sentence: "(ausschalten|deaktivieren|abbrechen|stoppen|aus)"
+  timer_duration_seconds: "{timer_seconds:seconds} Sekunde[n]"
+  timer_duration_minutes: "{timer_minutes:minutes} Minute[n][ [und]{timer_seconds:seconds} Sekunde[n]]"
+  timer_duration_hours: "{timer_hours:hours} Stunde[n][ [und]{timer_minutes:minutes} Minute[n]][ [und]{timer_seconds:seconds} Sekunde[n]]"
+  timer_duration: "<timer_duration_seconds>|<timer_duration_minutes>|<timer_duration_hours>"
+  timer_decrease: "(verringere|verkürze|reduziere)"
+  timer_decrease_end_of_sentence: "(verringern|verkürzen|reduzieren)"
+
+  timer_start_seconds: "{timer_seconds:start_seconds} Sekunde[n]"
+  timer_start_minutes: "{timer_minutes:start_minutes} Minute[n][ [und]{timer_seconds:start_seconds} Sekunde[n]]"
+  timer_start_hours: "{timer_hours:start_hours} Stunde[n][ [und]{timer_minutes:start_minutes} Minute[n]][ [und]{timer_seconds:start_seconds} Sekunde[n]]"
+  timer_start: "<timer_start_seconds>|<timer_start_minutes>|<timer_start_hours>"
+
+  # Media Players
+  naechster: "nächste[r|s|n]"
+  vorheriger_letzter: "(vorherige|letzte)[r|s|n]"
+  starte: (starte|spiel[e])
+  starten_end_of_sentence: "([ab]spielen|[an](schauen|hören)|wiedergeben|starten)"
+  wiederhole: (wiederhol[e][ <artikel_bestimmt>]|zurück <zu_dem>)
+  song: "(Titel|Lied|Song|Track|Stück)"
+  media_type: "(musik|[fernseh]sendung|gerät[e])"
+  source_of_noise: "([die ](Musik|[fernseh]sendung)|[den ]Fernseher|[das ]Radio)"
+  media_unmute: "(entmuten|ton (an|ein)[schalten]|laut schalten|Stummschaltung (aufheben|aus|deaktivieren))"
+  media_mute: "(mute[n]|ton (aus[schalten]|abschalten)|Stumm[[ ]schalten]|Stummschaltung (aktivieren|an|ein))"
+
 skip_words:
   - "bitte"
+  - "danke"
+  - "gefälligst"
+  - "jetzt"
+  - "sofort"
+  - "gleich"
+  - "gerade"
+  - "momentan"
+  - "noch"
+  - "im Moment"
+  - "derzeit"
+  - "aktuell"
+  - "mal"
+  - "eben"
+  - "kannst du"
+  - "könntest du"
+  - "würdest du"
+  - "du sollst"
+  - "ähm"
+  - "äh"
+  - "doch"

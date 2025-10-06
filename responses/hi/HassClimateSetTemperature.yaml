@@ -1,0 +1,5 @@
+language: hi
+responses:
+  intents:
+    HassClimateSetTemperature:
+      default: "तापमान {{ slots.temperature }} डिग्री पर सेट कर दिया गया"

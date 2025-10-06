@@ -1,0 +1,6 @@
+language: el
+responses:
+  intents:
+    HassLightSet:
+      brightness: "Η φωτεινότητα ορίστηκε σε {{ slots.brightness }}"
+      color: "Το χρώμα ορίστηκε σε {{ slots.color }}"

@@ -1,28 +1,32 @@
-language: "es"
+language: es
 tests:
   - sentences:
-      - "enciende el ventilador de techo"
-      - "encender ventilador de techo"
-      - "conecta ventilador de techo"
-      - "podrías conectar ventilador de techo"
+      - enciende lámpara de la mesilla
     intent:
-      name: "HassTurnOn"
+      name: HassTurnOn
       slots:
-        name: "fan.ventilador_techo"
+        name: Lámpara de la mesilla
+    response: lámpara de la mesilla se ha encendido
+
   - sentences:
-      - "activa ventilador de techo del salón"
-      - "activar el ventilador de techo en el salón"
-      - "prende ventilador de techo de salón"
-      - "prender el ventilador de techo en salón"
+      - enciende el ventilador de techo
+      - encienda ventilador de techo
+      - encender ventilador de techo
+      - conecta ventilador de techo
+      - por favor conecte ventilador de techo
+      - podrías conectar ventilador de techo
     intent:
-      name: "HassTurnOn"
+      name: HassTurnOn
       slots:
-        name: "fan.ventilador_techo"
-        area: "salon"
+        name: Ventilador de techo
+    response: "Se ha activado el ventilador"
+
   - sentences:
-      - "activa el interruptor de la cocina"
+      - enciende luces de la cocina
+      - activa todas las luces de la cocina
     intent:
-      name: "HassTurnOn"
+      name: HassTurnOn
       slots:
-        name: "switch.cocina"
-        area: "cocina"
+        domain: light
+        area: Cocina
+    response: "Luces encendidas"

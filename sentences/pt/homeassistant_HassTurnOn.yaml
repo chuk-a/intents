@@ -3,5 +3,13 @@ intents:
   HassTurnOn:
     data:
       - sentences:
-          - "(ligue | liga) [(o | a)] <nome>"
-          - "(ligue | liga) [(o | a)] <nome> <na_zona>"
+          - "<ligar> [a[s]|o[s]] [luz[es]|interruptor[es]] [do|da] <nome>"
+        excludes_context:
+          domain:
+            - binary_sensor
+            - cover
+            - lock
+            - scene
+            - script
+            - sensor
+            - vacuum

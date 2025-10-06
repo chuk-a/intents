@@ -1,0 +1,12 @@
+language: sk
+tests:
+  - sentences:
+      - "spusti televíziu"
+      - "spustiť telku"
+    intent:
+      name: HassMediaUnpause
+      slots:
+        name:
+          - "Televíziu"
+          - "Telku"
+    response: "Spustené"
